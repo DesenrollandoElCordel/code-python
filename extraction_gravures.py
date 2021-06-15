@@ -71,7 +71,7 @@ for subdir, dirs, files in os.walk(args.xml):
                         cropped = res[rect[1]: rect[1] + rect[3], rect[0]: rect[0] + rect[2]]
 
                         # Création d'un nouveau nom pour l'image
-                        new_name = label_img[:-1] + 'grabados_' + str(k+1) + '.jpg'
+                        new_name = 'grabado_m' + label_img[6:11] + str(k+1) + '.jpg'
                         # Création du chemin de la nouvelle image
                         item_gravure_path = os.path.join(path_gravure, new_name)
 
