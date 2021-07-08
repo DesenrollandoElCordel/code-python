@@ -1,7 +1,7 @@
 import os
 import xml.etree.ElementTree as ET
 
-folder = "/Users/elinaleblanc/Documents/Postdoctorat/Encodage/TEI_tests"
+folder = ""
 # print(folder)
 
 for f in os.listdir(folder):
