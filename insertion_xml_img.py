@@ -4,11 +4,11 @@ import argparse
 
 # Création des arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('--xml', default='transcriptions', type=str, help="Le chemin du dossier des fichiers xml à charger.")
+parser.add_argument('--xml', default='/Users/elinaleblanc/Documents/Postdoctorat/Encodage/TEI_files', type=str, help="Le chemin du dossier des fichiers xml à charger.")
 args = parser.parse_args()
 
 for f in os.listdir(args.xml):
-    if not f.endswith('.DS_Store'):
+    if f.endswith('.xml'):
         xml_path = os.path.join(args.xml, f)  # Chemin vers les fichiers .xml
         label, extension = os.path.splitext(f)  # Récupération du nom du fichier sans l'extension
         # print(label)
@@ -25,7 +25,7 @@ for f in os.listdir(args.xml):
             # print(pb)
             numberPage = pb.get('n')  # On récupère @n
             # url = 'https://iiif.unige.ch/demelercordel/'  # On crée le 'base URI'
-            pb.set('source', label + '_' + numberPage + '.jpg')  # On ajoute un @source à chaque <pb/> avec pour valeur le nouvel URI
+            pb.set('source', label + '_' + str(numberPage) + '.jpg')  # On ajoute un @source à chaque <pb/> avec pour valeur le nouvel URI
 
         # print(new_path)
         tree.write(xml_path, encoding="UTF-8", xml_declaration=True)  # Création des nvx arbres .xml et enregistrement dans le nouveau dossier !
