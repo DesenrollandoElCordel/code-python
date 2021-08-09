@@ -4,7 +4,7 @@ import argparse
 
 # Création des arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('--xml', default='/Users/elinaleblanc/Documents/Postdoctorat/Encodage/TEI_files', type=str, help="Le chemin du dossier des fichiers xml à charger.")
+parser.add_argument('--xml', default='transcriptions', type=str, help="Le chemin du dossier des fichiers xml à charger.")
 args = parser.parse_args()
 
 for f in os.listdir(args.xml):
