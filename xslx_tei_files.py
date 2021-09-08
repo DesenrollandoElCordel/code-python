@@ -1,5 +1,6 @@
 from openpyxl import load_workbook
 from lxml import etree
+import xml.etree.ElementTree as eT
 import os
 
 
@@ -18,13 +19,19 @@ wb = load_workbook(filename='/Users/elinaleblanc/Documents/Postdoctorat/Index_Pl
 index = wb['Feuil1']
 # print(index)
 
+tree = eT.parse('/Users/elinaleblanc/Documents/Postdoctorat/Encodage/TEI_tests/Index_gravures/taxonomy_grabados.xml')
+root = tree.getroot()
+ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
+
+# Faire un test avec le nom des colonnes, puis l'intégrer dans la boucle XML (dans la fonction ?)
+
 # Récupération des noms de colonnes
 list_name_columns = []
 for row in index.iter_rows(max_row=1, max_col=23, values_only=True):
     list_name_columns.append(row)
-print(list_name_columns)
+# print(list_name_columns)
 
-# Récupération des descriptions de gravure
+# Récupération des descriptions
 title_engravings = []
 for row in index.iter_rows(min_row=2, max_row=10, max_col=23, values_only=True):
     row_list = list(row)
@@ -74,7 +81,10 @@ for i in range(len(title_engravings)):
 
     profileDesc = etree.SubElement(teiHeader, "profileDesc")
     textClass = etree.SubElement(profileDesc, 'textClass')
-    add_keywords(title_engravings[i][5], list_name_columns[0][5], textClass)  # Catégorie 'personaje_masculino'
+    keywords = etree.SubElement(textClass, 'keywords')
+    term = etree.SubElement(keywords, 'term')
+
+    '''add_keywords(title_engravings[i][5], list_name_columns[0][5], textClass)  # Catégorie 'personaje_masculino'
     add_keywords(title_engravings[i][6], list_name_columns[0][6], textClass)  # Catégorie 'personaje_femenino'
     add_keywords(title_engravings[i][7], list_name_columns[0][7], textClass)  # Catégorie 'grupos_personajes'
     add_keywords(title_engravings[i][8], list_name_columns[0][8], textClass)  # Catégorie 'actitud'
@@ -90,7 +100,7 @@ for i in range(len(title_engravings)):
     add_keywords(title_engravings[i][18], list_name_columns[0][18], textClass)  # Catégorie 'espacio_construido'
     add_keywords(title_engravings[i][19], list_name_columns[0][19], textClass)  # Catégorie 'ambiente_natural'
     add_keywords(title_engravings[i][20], list_name_columns[0][20], textClass)  # Catégorie 'ambiente_maritimo'
-    add_keywords(title_engravings[i][21], list_name_columns[0][21], textClass)  # Catégorie 'elementos_decorativos'
+    add_keywords(title_engravings[i][21], list_name_columns[0][21], textClass)  # Catégorie 'elementos_decorativos'''
 
     text = etree.SubElement(root, "text")
     body = etree.SubElement(text, "body")
@@ -111,4 +121,4 @@ for i in range(len(title_engravings)):
     #if not os.path.isfile(filename_path):
         #tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)
 
-    print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
+    # print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
