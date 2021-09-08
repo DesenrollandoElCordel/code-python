@@ -14,19 +14,19 @@ def add_keywords(keyword, category, element):
             catref = etree.SubElement(element, "catRef", scheme="#" + category, target="#" + keyword)
 
 
-wb = load_workbook(filename='')
+wb = load_workbook(filename='/Users/elinaleblanc/Documents/Postdoctorat/Index_Pliegos/Index_Grabados_Moreno.xlsx')
 index = wb['Feuil1']
 # print(index)
 
 # Récupération des noms de colonnes
 list_name_columns = []
-for row in index.iter_rows(max_row=1, max_col=9, values_only=True):
+for row in index.iter_rows(max_row=1, max_col=23, values_only=True):
     list_name_columns.append(row)
-# print(list_name_columns)
+print(list_name_columns)
 
 # Récupération des descriptions de gravure
 title_engravings = []
-for row in index.iter_rows(min_row=2, max_row=7, max_col=9, values_only=True):
+for row in index.iter_rows(min_row=2, max_row=10, max_col=23, values_only=True):
     row_list = list(row)
     title_engravings.append(row_list)
 # print(title_engravings)
@@ -76,8 +76,21 @@ for i in range(len(title_engravings)):
     textClass = etree.SubElement(profileDesc, 'textClass')
     add_keywords(title_engravings[i][5], list_name_columns[0][5], textClass)  # Catégorie 'personaje_masculino'
     add_keywords(title_engravings[i][6], list_name_columns[0][6], textClass)  # Catégorie 'personaje_femenino'
-    add_keywords(title_engravings[i][7], list_name_columns[0][7], textClass)  # Catégorie 'accesorios'
-    add_keywords(title_engravings[i][8], list_name_columns[0][8], textClass)  # Catégorie 'lugar'
+    add_keywords(title_engravings[i][7], list_name_columns[0][7], textClass)  # Catégorie 'grupos_personajes'
+    add_keywords(title_engravings[i][8], list_name_columns[0][8], textClass)  # Catégorie 'actitud'
+    add_keywords(title_engravings[i][9], list_name_columns[0][9], textClass)  # Catégorie 'muerte'
+    add_keywords(title_engravings[i][10], list_name_columns[0][10], textClass)  # Catégorie 'religion'
+    add_keywords(title_engravings[i][11], list_name_columns[0][11], textClass)  # Catégorie 'monstruo'
+    add_keywords(title_engravings[i][12], list_name_columns[0][12], textClass)  # Catégorie 'animales'
+    add_keywords(title_engravings[i][13], list_name_columns[0][13], textClass)  # Catégorie 'atuendo'
+    add_keywords(title_engravings[i][14], list_name_columns[0][14], textClass)  # Catégorie 'instrumento_musical'
+    add_keywords(title_engravings[i][15], list_name_columns[0][15], textClass)  # Catégorie 'arma_de_fuego'
+    add_keywords(title_engravings[i][16], list_name_columns[0][16], textClass)  # Catégorie 'arma_blanca'
+    add_keywords(title_engravings[i][17], list_name_columns[0][17], textClass)  # Catégorie 'accesorios_varios'
+    add_keywords(title_engravings[i][18], list_name_columns[0][18], textClass)  # Catégorie 'espacio_construido'
+    add_keywords(title_engravings[i][19], list_name_columns[0][19], textClass)  # Catégorie 'ambiente_natural'
+    add_keywords(title_engravings[i][20], list_name_columns[0][20], textClass)  # Catégorie 'ambiente_maritimo'
+    add_keywords(title_engravings[i][21], list_name_columns[0][21], textClass)  # Catégorie 'elementos_decorativos'
 
     text = etree.SubElement(root, "text")
     body = etree.SubElement(text, "body")
@@ -85,17 +98,17 @@ for i in range(len(title_engravings)):
 
     tree = etree.ElementTree(root)
 
-    path_tei = 'TEI_Gravures/'
+    '''path_tei = 'TEI_Gravures/'
     if not os.path.isdir(path_tei):
-        os.mkdir(path_tei)
+        os.mkdir(path_tei)'''
 
     filename = title_engravings[i][0] + '.xml'
     # print(filename)
 
-    filename_path = os.path.join(path_tei, filename)
-    print(filename_path)
+    #filename_path = os.path.join(path_tei, filename)
+    #print(filename_path)
 
-    if not os.path.isfile(filename_path):
-        tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)
+    #if not os.path.isfile(filename_path):
+        #tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)
 
-    # print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
+    print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
