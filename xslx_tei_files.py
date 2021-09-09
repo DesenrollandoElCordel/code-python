@@ -6,15 +6,15 @@ import os
 
 # Fonction pour la gestion des mots-clés
 def add_list_keywords(keyword):
-    tree = eT.parse('/Users/elinaleblanc/Documents/Postdoctorat/Encodage/TEI_tests/Index_gravures/taxonomy_grabados.xml')
+    tree = eT.parse('')
     root = tree.getroot()
     ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
+    list_keywords = etree.SubElement(keywords, "term")
 
     for x in root.findall('.//tei:category', ns):
         att = x.get('{http://www.w3.org/XML/1998/namespace}id')
         catdesc = x[0].text
         if att == keyword:
-            list_keywords = etree.SubElement(keywords, "term")
             list_keywords.text = catdesc
 
 
@@ -30,7 +30,7 @@ def add_keywords(keyword, category, element):
             add_list_keywords(keyword)
 
 
-wb = load_workbook(filename='/Users/elinaleblanc/Documents/Postdoctorat/Index_Pliegos/Index_Grabados_Moreno.xlsx')
+wb = load_workbook(filename='')
 index = wb['Feuil1']
 # print(index)
 
@@ -48,18 +48,6 @@ for row in index.iter_rows(min_row=2, max_row=10, max_col=23, values_only=True):
     row_list = list(row)
     title_engravings.append(row_list)
 # print(title_engravings)
-
-tree = eT.parse('/Users/elinaleblanc/Documents/Postdoctorat/Encodage/TEI_tests/Index_gravures/taxonomy_grabados.xml')
-root = tree.getroot()
-ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
-
-for x in root.findall('.//tei:category', ns):
-    att = x.get('{http://www.w3.org/XML/1998/namespace}id')
-    catDesc = x[0].text
-    # print(catDesc)
-    # for i in range(len(title_engravings)):
-        # if att == title_engravings[i][5]:
-            # print(catDesc)
 
 # Création des fichiers .xml
 for i in range(len(title_engravings)):
@@ -93,6 +81,10 @@ for i in range(len(title_engravings)):
     locus1.text = title_engravings[i][2]
     date = etree.SubElement(figDesc, "date")
     date.text = str(title_engravings[i][3])
+    publisher = etree.SubElement(figDesc, "persName", type="publisher")
+    publisher.text = "José María Moreno"
+    pubPlace = etree.SubElement(figDesc, "placeName", type="pubPlace")
+    pubPlace.text = "Carmona (Sevilla)"
     note1 = etree.SubElement(bibl, "note", type="similar_ejemplar")
     note2 = etree.SubElement(bibl, "note", type="origen")
     note2.text = "Grabado extraído del pliego " + title_engravings[i][1]
@@ -105,7 +97,6 @@ for i in range(len(title_engravings)):
     profileDesc = etree.SubElement(teiHeader, "profileDesc")
     textClass = etree.SubElement(profileDesc, 'textClass')
     keywords = etree.SubElement(textClass, 'keywords')
-    term = etree.SubElement(keywords, 'term')
 
     add_keywords(title_engravings[i][5], list_name_columns[0][5], textClass)  # Catégorie 'personaje_masculino'
     add_keywords(title_engravings[i][6], list_name_columns[0][6], textClass)  # Catégorie 'personaje_femenino'
@@ -131,17 +122,17 @@ for i in range(len(title_engravings)):
 
     tree = etree.ElementTree(root)
 
-    '''path_tei = 'TEI_Gravures/'
+    path_tei = '../TEI_Gravures/'
     if not os.path.isdir(path_tei):
-        os.mkdir(path_tei)'''
+        os.mkdir(path_tei)
 
     filename = title_engravings[i][0] + '.xml'
     # print(filename)
 
-    #filename_path = os.path.join(path_tei, filename)
-    #print(filename_path)
+    filename_path = os.path.join(path_tei, filename)
+    # print(filename_path)
 
-    #if not os.path.isfile(filename_path):
-        #tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)
+    if not os.path.isfile(filename_path):
+        tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)
 
-    print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
+    # print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
