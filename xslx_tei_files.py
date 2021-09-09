@@ -5,23 +5,34 @@ import os
 
 
 # Fonction pour la gestion des mots-clés
+def add_list_keywords(keyword):
+    tree = eT.parse('/Users/elinaleblanc/Documents/Postdoctorat/Encodage/TEI_tests/Index_gravures/taxonomy_grabados.xml')
+    root = tree.getroot()
+    ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
+
+    for x in root.findall('.//tei:category', ns):
+        att = x.get('{http://www.w3.org/XML/1998/namespace}id')
+        catdesc = x[0].text
+        if att == keyword:
+            list_keywords = etree.SubElement(keywords, "term")
+            list_keywords.text = catdesc
+
+
 def add_keywords(keyword, category, element):
     if keyword is not None:
         if "," in keyword:  # Gestion des catégories avec plusieurs mots-clés
             keyword_split = keyword.split(",")
             for k in keyword_split:
                 catref = etree.SubElement(element, "catRef", scheme="#" + category, target="#" + k)
+                add_list_keywords(k)
         else:
             catref = etree.SubElement(element, "catRef", scheme="#" + category, target="#" + keyword)
+            add_list_keywords(keyword)
 
 
 wb = load_workbook(filename='/Users/elinaleblanc/Documents/Postdoctorat/Index_Pliegos/Index_Grabados_Moreno.xlsx')
 index = wb['Feuil1']
 # print(index)
-
-tree = eT.parse('/Users/elinaleblanc/Documents/Postdoctorat/Encodage/TEI_tests/Index_gravures/taxonomy_grabados.xml')
-root = tree.getroot()
-ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
 
 # Faire un test avec le nom des colonnes, puis l'intégrer dans la boucle XML (dans la fonction ?)
 
@@ -37,6 +48,18 @@ for row in index.iter_rows(min_row=2, max_row=10, max_col=23, values_only=True):
     row_list = list(row)
     title_engravings.append(row_list)
 # print(title_engravings)
+
+tree = eT.parse('/Users/elinaleblanc/Documents/Postdoctorat/Encodage/TEI_tests/Index_gravures/taxonomy_grabados.xml')
+root = tree.getroot()
+ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
+
+for x in root.findall('.//tei:category', ns):
+    att = x.get('{http://www.w3.org/XML/1998/namespace}id')
+    catDesc = x[0].text
+    # print(catDesc)
+    # for i in range(len(title_engravings)):
+        # if att == title_engravings[i][5]:
+            # print(catDesc)
 
 # Création des fichiers .xml
 for i in range(len(title_engravings)):
@@ -84,7 +107,7 @@ for i in range(len(title_engravings)):
     keywords = etree.SubElement(textClass, 'keywords')
     term = etree.SubElement(keywords, 'term')
 
-    '''add_keywords(title_engravings[i][5], list_name_columns[0][5], textClass)  # Catégorie 'personaje_masculino'
+    add_keywords(title_engravings[i][5], list_name_columns[0][5], textClass)  # Catégorie 'personaje_masculino'
     add_keywords(title_engravings[i][6], list_name_columns[0][6], textClass)  # Catégorie 'personaje_femenino'
     add_keywords(title_engravings[i][7], list_name_columns[0][7], textClass)  # Catégorie 'grupos_personajes'
     add_keywords(title_engravings[i][8], list_name_columns[0][8], textClass)  # Catégorie 'actitud'
@@ -100,7 +123,7 @@ for i in range(len(title_engravings)):
     add_keywords(title_engravings[i][18], list_name_columns[0][18], textClass)  # Catégorie 'espacio_construido'
     add_keywords(title_engravings[i][19], list_name_columns[0][19], textClass)  # Catégorie 'ambiente_natural'
     add_keywords(title_engravings[i][20], list_name_columns[0][20], textClass)  # Catégorie 'ambiente_maritimo'
-    add_keywords(title_engravings[i][21], list_name_columns[0][21], textClass)  # Catégorie 'elementos_decorativos'''
+    add_keywords(title_engravings[i][21], list_name_columns[0][21], textClass)  # Catégorie 'elementos_decorativos'
 
     text = etree.SubElement(root, "text")
     body = etree.SubElement(text, "body")
@@ -121,4 +144,4 @@ for i in range(len(title_engravings)):
     #if not os.path.isfile(filename_path):
         #tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)
 
-    # print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
+    print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
