@@ -19,7 +19,6 @@ def add_list_keywords(keyword):
 
 
 def add_keywords(keyword, category, element):
-    keyword = str(keyword)
     if keyword is not None:
         if "," in keyword:  # Gestion des catégories avec plusieurs mots-clés
             keyword_split = keyword.split(",")
@@ -37,13 +36,13 @@ index = wb['Feuil1']
 
 # Récupération des noms de colonnes
 list_name_columns = []
-for row in index.iter_rows(max_row=1, max_col=23, values_only=True):
+for row in index.iter_rows(max_row=1, max_col=25, values_only=True):
     list_name_columns.append(row)
 # print(list_name_columns)
 
 # Récupération des descriptions
 title_engravings = []
-for row in index.iter_rows(min_row=2, max_row=10, max_col=23, values_only=True):
+for row in index.iter_rows(min_row=2, max_row=10, max_col=25, values_only=True):
     row_list = list(row)
     title_engravings.append(row_list)
 # print(title_engravings)
@@ -98,6 +97,23 @@ for i in range(len(title_engravings)):
     locus1.text = title_engravings[i][4]
 
     note1 = etree.SubElement(bibl, "note", type="similar_ejemplar")
+    if title_engravings[i][24] is not None:
+        list_sameAs = etree.SubElement(note1, "list")
+        if "," in title_engravings[i][24]:
+            sameAs_split = title_engravings[i][24].split(",")
+            list_sameAs.set("n", str(len(sameAs_split)))
+            for s in sameAs_split:
+                item = etree.SubElement(list_sameAs, "item")
+                ptr = etree.SubElement(item, "ptr", sameAs=s + ".xml")
+                locus2 = etree.SubElement(item, "locus")
+                date2 = etree.SubElement(item, "date")
+        else:
+            list_sameAs.set("n", "1")
+            item = etree.SubElement(list_sameAs, "item")
+            ptr = etree.SubElement(item, "ptr", sameAs=title_engravings[i][24] + '.xml')
+            locus2 = etree.SubElement(item, "locus")
+            date2 = etree.SubElement(item, "date")
+
     note2 = etree.SubElement(bibl, "note", type="origen")
     note2.text = "Grabado extraído del pliego " + title_engravings[i][1]
 
@@ -110,23 +126,23 @@ for i in range(len(title_engravings)):
     textClass = etree.SubElement(profileDesc, 'textClass')
     keywords = etree.SubElement(textClass, 'keywords')
 
-    add_keywords(title_engravings[i][5], list_name_columns[0][5], textClass)  # Catégorie 'personaje_masculino'
-    add_keywords(title_engravings[i][6], list_name_columns[0][6], textClass)  # Catégorie 'personaje_femenino'
-    add_keywords(title_engravings[i][7], list_name_columns[0][7], textClass)  # Catégorie 'grupos_personajes'
-    add_keywords(title_engravings[i][8], list_name_columns[0][8], textClass)  # Catégorie 'actitud'
-    add_keywords(title_engravings[i][9], list_name_columns[0][9], textClass)  # Catégorie 'muerte'
-    add_keywords(title_engravings[i][10], list_name_columns[0][10], textClass)  # Catégorie 'religion'
-    add_keywords(title_engravings[i][11], list_name_columns[0][11], textClass)  # Catégorie 'monstruo'
-    add_keywords(title_engravings[i][12], list_name_columns[0][12], textClass)  # Catégorie 'animales'
-    add_keywords(title_engravings[i][13], list_name_columns[0][13], textClass)  # Catégorie 'atuendo'
-    add_keywords(title_engravings[i][14], list_name_columns[0][14], textClass)  # Catégorie 'instrumento_musical'
-    add_keywords(title_engravings[i][15], list_name_columns[0][15], textClass)  # Catégorie 'arma_de_fuego'
-    add_keywords(title_engravings[i][16], list_name_columns[0][16], textClass)  # Catégorie 'arma_blanca'
-    add_keywords(title_engravings[i][17], list_name_columns[0][17], textClass)  # Catégorie 'accesorios_varios'
-    add_keywords(title_engravings[i][18], list_name_columns[0][18], textClass)  # Catégorie 'espacio_construido'
-    add_keywords(title_engravings[i][19], list_name_columns[0][19], textClass)  # Catégorie 'ambiente_natural'
-    add_keywords(title_engravings[i][20], list_name_columns[0][20], textClass)  # Catégorie 'ambiente_maritimo'
-    add_keywords(title_engravings[i][21], list_name_columns[0][21], textClass)  # Catégorie 'elementos_decorativos'
+    add_keywords(title_engravings[i][7], list_name_columns[0][7], textClass)  # Catégorie 'personaje_masculino'
+    add_keywords(title_engravings[i][8], list_name_columns[0][8], textClass)  # Catégorie 'personaje_femenino'
+    add_keywords(title_engravings[i][9], list_name_columns[0][9], textClass)  # Catégorie 'grupos_personajes'
+    add_keywords(title_engravings[i][10], list_name_columns[0][10], textClass)  # Catégorie 'actitud'
+    add_keywords(title_engravings[i][11], list_name_columns[0][11], textClass)  # Catégorie 'muerte'
+    add_keywords(title_engravings[i][12], list_name_columns[0][12], textClass)  # Catégorie 'religion'
+    add_keywords(title_engravings[i][13], list_name_columns[0][13], textClass)  # Catégorie 'monstruo'
+    add_keywords(title_engravings[i][14], list_name_columns[0][14], textClass)  # Catégorie 'animales'
+    add_keywords(title_engravings[i][15], list_name_columns[0][15], textClass)  # Catégorie 'atuendo'
+    add_keywords(title_engravings[i][16], list_name_columns[0][16], textClass)  # Catégorie 'instrumento_musical'
+    add_keywords(title_engravings[i][17], list_name_columns[0][17], textClass)  # Catégorie 'arma_de_fuego'
+    add_keywords(title_engravings[i][18], list_name_columns[0][18], textClass)  # Catégorie 'arma_blanca'
+    add_keywords(title_engravings[i][19], list_name_columns[0][19], textClass)  # Catégorie 'accesorios_varios'
+    add_keywords(title_engravings[i][20], list_name_columns[0][20], textClass)  # Catégorie 'espacio_construido'
+    add_keywords(title_engravings[i][21], list_name_columns[0][21], textClass)  # Catégorie 'ambiente_natural'
+    add_keywords(title_engravings[i][22], list_name_columns[0][22], textClass)  # Catégorie 'ambiente_maritimo'
+    add_keywords(title_engravings[i][23], list_name_columns[0][23], textClass)  # Catégorie 'elementos_decorativos'
 
     text = etree.SubElement(root, "text")
     body = etree.SubElement(text, "body")
