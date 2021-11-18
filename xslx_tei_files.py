@@ -35,8 +35,6 @@ wb = load_workbook(filename='/Users/elinaleblanc/Downloads/Index_Grabados_Moreno
 index = wb['Feuil1']
 # print(index)
 
-# Faire un test avec le nom des colonnes, puis l'intégrer dans la boucle XML (dans la fonction ?)
-
 # Récupération des noms de colonnes
 list_name_columns = []
 for row in index.iter_rows(max_row=1, max_col=23, values_only=True):
@@ -73,18 +71,32 @@ for i in range(len(title_engravings)):
 
     sourceDesc = etree.SubElement(fileDesc, "sourceDesc")
     bibl = etree.SubElement(sourceDesc, "bibl")
+
+    title_bibl = etree.SubElement(bibl, "title")
+    title_bibl.text = title_engravings[i][0]
+    author = etree.SubElement(bibl, "author")
+
+    publisher = etree.SubElement(bibl, "publisher")
+    publisher.text = "José María Moreno"
+    pubPlace = etree.SubElement(bibl, "pubPlace")
+    pubPlace.text = "Carmona (Sevilla)"
+    date = etree.SubElement(bibl, "date")
+    date.text = str(title_engravings[i][5])
+    if title_engravings[i][5] == "[s.a.]":
+        date.set("when", "1800")
+        date.set("cert", "low")
+    else:
+        date.set("when", str(title_engravings[i][5]))
+        date.set("cert", "high")
+
     ident = etree.SubElement(bibl, "ident", type="DOI")
+
     figure = etree.SubElement(bibl, "figure")
     graphic = etree.SubElement(figure, "graphic", url="")
     figDesc = etree.SubElement(figure, "figDesc")
     locus1 = etree.SubElement(figDesc, "locus", target=title_engravings[i][1]+".xml")
     locus1.text = title_engravings[i][4]
-    date = etree.SubElement(figDesc, "date")
-    date.text = str(title_engravings[i][5])
-    publisher = etree.SubElement(figDesc, "persName", type="publisher")
-    publisher.text = "José María Moreno"
-    pubPlace = etree.SubElement(figDesc, "placeName", type="pubPlace")
-    pubPlace.text = "Carmona (Sevilla)"
+
     note1 = etree.SubElement(bibl, "note", type="similar_ejemplar")
     note2 = etree.SubElement(bibl, "note", type="origen")
     note2.text = "Grabado extraído del pliego " + title_engravings[i][1]
