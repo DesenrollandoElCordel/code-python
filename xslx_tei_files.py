@@ -6,7 +6,7 @@ import os
 
 # Fonction pour la gestion des mots-clés
 def add_list_keywords(keyword):
-    tree = eT.parse('')
+    tree = eT.parse('/Users/elinaleblanc/Documents/Postdoctorat/Encodage/TEI_tests/Index_gravures/taxonomy_grabados.xml')
     root = tree.getroot()
     ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
     list_keywords = etree.SubElement(keywords, "term")
@@ -19,6 +19,7 @@ def add_list_keywords(keyword):
 
 
 def add_keywords(keyword, category, element):
+    keyword = str(keyword)
     if keyword is not None:
         if "," in keyword:  # Gestion des catégories avec plusieurs mots-clés
             keyword_split = keyword.split(",")
@@ -30,7 +31,7 @@ def add_keywords(keyword, category, element):
             add_list_keywords(keyword)
 
 
-wb = load_workbook(filename='')
+wb = load_workbook(filename='/Users/elinaleblanc/Downloads/Index_Grabados_Moreno.xlsx')
 index = wb['Feuil1']
 # print(index)
 
@@ -67,9 +68,8 @@ for i in range(len(title_engravings)):
     pubStmt = etree.SubElement(fileDesc, "publicationStmt")
     pubStmt_child1 = etree.SubElement(pubStmt, "authority")
     pubStmt_child1.text = "Bibliothèque Universitaire de Genève (BUNIGE)"
-    pubStmt_child2 = etree.SubElement(pubStmt, "availability")
-    pubStmt_child2_p = etree.SubElement(pubStmt_child2, "p")
-    pubStmt_child2_p.text = "CC-BY-NC-SA"
+    pubStmt_child2 = etree.SubElement(pubStmt, "availability", status="restricted")
+    licence = etree.SubElement(pubStmt_child2, "licence", n="cc by nc sa", target="https://creativecommons.org/licenses/by-nc-sa/4.0/")
 
     sourceDesc = etree.SubElement(fileDesc, "sourceDesc")
     bibl = etree.SubElement(sourceDesc, "bibl")
@@ -78,9 +78,9 @@ for i in range(len(title_engravings)):
     graphic = etree.SubElement(figure, "graphic", url="")
     figDesc = etree.SubElement(figure, "figDesc")
     locus1 = etree.SubElement(figDesc, "locus", target=title_engravings[i][1]+".xml")
-    locus1.text = title_engravings[i][2]
+    locus1.text = title_engravings[i][4]
     date = etree.SubElement(figDesc, "date")
-    date.text = str(title_engravings[i][3])
+    date.text = str(title_engravings[i][5])
     publisher = etree.SubElement(figDesc, "persName", type="publisher")
     publisher.text = "José María Moreno"
     pubPlace = etree.SubElement(figDesc, "placeName", type="pubPlace")
@@ -132,7 +132,7 @@ for i in range(len(title_engravings)):
     filename_path = os.path.join(path_tei, filename)
     # print(filename_path)
 
-    if not os.path.isfile(filename_path):
-        tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)
+    '''if not os.path.isfile(filename_path):
+        tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)'''
 
-    # print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
+    print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
