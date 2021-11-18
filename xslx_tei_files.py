@@ -76,8 +76,8 @@ for i in range(len(title_engravings)):
     author = etree.SubElement(bibl, "author")
 
     publisher = etree.SubElement(bibl, "publisher")
-    publisher.text = "José María Moreno"
-    pubPlace = etree.SubElement(bibl, "pubPlace")
+    publisher.text = title_engravings[i][6]
+    pubPlace = etree.SubElement(bibl, "pubPlace", ref="https://www.geonames.org/2520118/carmona.html")
     pubPlace.text = "Carmona (Sevilla)"
     date = etree.SubElement(bibl, "date")
     date.text = str(title_engravings[i][5])
@@ -160,7 +160,7 @@ for i in range(len(title_engravings)):
     filename_path = os.path.join(path_tei, filename)
     # print(filename_path)
 
-    '''if not os.path.isfile(filename_path):
-        tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)'''
+    if not os.path.isfile(filename_path):
+        tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)
 
-    print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
+    # print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
