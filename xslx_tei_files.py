@@ -32,6 +32,14 @@ def add_keywords(keyword, category, element):
             add_list_keywords(keyword)
 
 
+tree_index_imp = eT.parse("/Users/elinaleblanc/Documents/Postdoctorat/Encodage/impresor.xml")
+root_index_imp = tree_index_imp.getroot()
+
+tree_index_lugar = eT.parse("/Users/elinaleblanc/Documents/Postdoctorat/Encodage/lugar_impresion.xml")
+root_index_lugar = tree_index_lugar.getroot()
+
+ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
+
 wb = load_workbook(filename='/Users/elinaleblanc/Documents/Postdoctorat/Index_Pliegos/Index_Grabados_Moreno.xlsx')
 index = wb['Feuil1']
 # print(index)
@@ -44,7 +52,7 @@ for row in index.iter_rows(max_row=1, max_col=25, values_only=True):
 
 # Récupération des descriptions
 title_engravings = []
-for row in index.iter_rows(min_row=2, max_row=15, max_col=25, values_only=True):
+for row in index.iter_rows(min_row=2, max_row=15, max_col=26, values_only=True):
     row_list = list(row)
     title_engravings.append(row_list)
 # print(title_engravings)
@@ -81,14 +89,22 @@ for i in range(len(title_engravings)):
     author = etree.SubElement(bibl, "author")
 
     publisher = etree.SubElement(bibl, "publisher")
-    publisher.text = title_engravings[i][6]
-    if "Moreno" in title_engravings[i][6]:
-        publisher.set("corresp", "impresor.xml#moreno")
-    else:
-        publisher.set("corresp", "impresor.xml#belloso")
+    for impresor in root_index_imp.findall(".//tei:person", ns):
+        attribute_impresor = impresor.get('{http://www.w3.org/XML/1998/namespace}id')
+        name_impresor = impresor[0].text
+        # print(name_impresor)
+        if attribute_impresor == title_engravings[i][6]:
+            publisher.text = name_impresor
+            publisher.set("corresp", "impresor.xml#" + title_engravings[i][6])
 
-    pubPlace = etree.SubElement(bibl, "pubPlace", ref="https://www.geonames.org/2520118/carmona.html", corresp="lugar.xml#carmona")
-    pubPlace.text = "Carmona (Sevilla)"
+    pubPlace = etree.SubElement(bibl, "pubPlace", ref="https://www.geonames.org/2520118/carmona.html")
+    for lugar in root_index_lugar.findall(".//tei:place", ns):
+        attribute_lugar = lugar.get('{http://www.w3.org/XML/1998/namespace}id')
+        name_lugar = lugar[0].text
+        if attribute_lugar == title_engravings[i][7]:
+            pubPlace.text = name_lugar
+            pubPlace.set("corresp", "lugar.xml#" + title_engravings[i][7])
+
     date = etree.SubElement(bibl, "date")
     date.text = str(title_engravings[i][5])
     if title_engravings[i][5] == "[s.a.]":
@@ -107,10 +123,10 @@ for i in range(len(title_engravings)):
     locus1.text = title_engravings[i][4]
 
     note1 = etree.SubElement(bibl, "note", type="similar_ejemplar")
-    if title_engravings[i][24] is not None:
+    if title_engravings[i][25] is not None:
         list_sameAs = etree.SubElement(note1, "list")
-        if "," in title_engravings[i][24]:
-            sameAs_split = title_engravings[i][24].split(",")
+        if "," in title_engravings[i][25]:
+            sameAs_split = title_engravings[i][25].split(",")
             list_sameAs.set("n", str(len(sameAs_split)))
             for s in sameAs_split:
                 item = etree.SubElement(list_sameAs, "item")
@@ -121,8 +137,8 @@ for i in range(len(title_engravings)):
         else:
             list_sameAs.set("n", "1")
             item = etree.SubElement(list_sameAs, "item")
-            title_sameAs = etree.SubElement(item, "title", corresp=title_engravings[i][24] + '.xml')
-            title_sameAs.text = title_engravings[i][24]
+            title_sameAs = etree.SubElement(item, "title", corresp=title_engravings[i][25] + '.xml')
+            title_sameAs.text = title_engravings[i][25]
             locus2 = etree.SubElement(item, "locus")
             date2 = etree.SubElement(item, "date")
 
@@ -138,23 +154,23 @@ for i in range(len(title_engravings)):
     textClass = etree.SubElement(profileDesc, 'textClass')
     keywords = etree.SubElement(textClass, 'keywords')
 
-    add_keywords(title_engravings[i][7], list_name_columns[0][7], textClass)  # Catégorie 'personaje_masculino'
-    add_keywords(title_engravings[i][8], list_name_columns[0][8], textClass)  # Catégorie 'personaje_femenino'
-    add_keywords(title_engravings[i][9], list_name_columns[0][9], textClass)  # Catégorie 'grupos_personajes'
-    add_keywords(title_engravings[i][10], list_name_columns[0][10], textClass)  # Catégorie 'actitud'
-    add_keywords(title_engravings[i][11], list_name_columns[0][11], textClass)  # Catégorie 'muerte'
-    add_keywords(title_engravings[i][12], list_name_columns[0][12], textClass)  # Catégorie 'religion'
-    add_keywords(title_engravings[i][13], list_name_columns[0][13], textClass)  # Catégorie 'monstruo'
-    add_keywords(title_engravings[i][14], list_name_columns[0][14], textClass)  # Catégorie 'animales'
-    add_keywords(title_engravings[i][15], list_name_columns[0][15], textClass)  # Catégorie 'atuendo'
-    add_keywords(title_engravings[i][16], list_name_columns[0][16], textClass)  # Catégorie 'instrumento_musical'
-    add_keywords(title_engravings[i][17], list_name_columns[0][17], textClass)  # Catégorie 'arma_de_fuego'
-    add_keywords(title_engravings[i][18], list_name_columns[0][18], textClass)  # Catégorie 'arma_blanca'
-    add_keywords(title_engravings[i][19], list_name_columns[0][19], textClass)  # Catégorie 'accesorios_varios'
-    add_keywords(title_engravings[i][20], list_name_columns[0][20], textClass)  # Catégorie 'espacio_construido'
-    add_keywords(title_engravings[i][21], list_name_columns[0][21], textClass)  # Catégorie 'ambiente_natural'
-    add_keywords(title_engravings[i][22], list_name_columns[0][22], textClass)  # Catégorie 'ambiente_maritimo'
-    add_keywords(title_engravings[i][23], list_name_columns[0][23], textClass)  # Catégorie 'elementos_decorativos'
+    add_keywords(title_engravings[i][7], list_name_columns[0][8], textClass)  # Catégorie 'personaje_masculino'
+    add_keywords(title_engravings[i][8], list_name_columns[0][9], textClass)  # Catégorie 'personaje_femenino'
+    add_keywords(title_engravings[i][9], list_name_columns[0][10], textClass)  # Catégorie 'grupos_personajes'
+    add_keywords(title_engravings[i][10], list_name_columns[0][11], textClass)  # Catégorie 'actitud'
+    add_keywords(title_engravings[i][11], list_name_columns[0][12], textClass)  # Catégorie 'muerte'
+    add_keywords(title_engravings[i][12], list_name_columns[0][13], textClass)  # Catégorie 'religion'
+    add_keywords(title_engravings[i][13], list_name_columns[0][14], textClass)  # Catégorie 'monstruo'
+    add_keywords(title_engravings[i][14], list_name_columns[0][15], textClass)  # Catégorie 'animales'
+    add_keywords(title_engravings[i][15], list_name_columns[0][16], textClass)  # Catégorie 'atuendo'
+    add_keywords(title_engravings[i][16], list_name_columns[0][17], textClass)  # Catégorie 'instrumento_musical'
+    add_keywords(title_engravings[i][17], list_name_columns[0][18], textClass)  # Catégorie 'arma_de_fuego'
+    add_keywords(title_engravings[i][18], list_name_columns[0][19], textClass)  # Catégorie 'arma_blanca'
+    add_keywords(title_engravings[i][19], list_name_columns[0][20], textClass)  # Catégorie 'accesorios_varios'
+    add_keywords(title_engravings[i][20], list_name_columns[0][21], textClass)  # Catégorie 'espacio_construido'
+    add_keywords(title_engravings[i][21], list_name_columns[0][22], textClass)  # Catégorie 'ambiente_natural'
+    add_keywords(title_engravings[i][22], list_name_columns[0][23], textClass)  # Catégorie 'ambiente_maritimo'
+    add_keywords(title_engravings[i][23], list_name_columns[0][24], textClass)  # Catégorie 'elementos_decorativos'
 
     revisionDesc = etree.SubElement(teiHeader, "revisionDesc")
     change = etree.SubElement(revisionDesc, "change", who="#EL", when="2021-11-22")
@@ -166,7 +182,7 @@ for i in range(len(title_engravings)):
 
     tree = etree.ElementTree(root)
 
-    path_tei = '../TEI_Gravures/'
+    '''path_tei = '../TEI_Gravures/'
     if not os.path.isdir(path_tei):
         os.mkdir(path_tei)
 
@@ -177,6 +193,6 @@ for i in range(len(title_engravings)):
     # print(filename_path)
 
     if not os.path.isfile(filename_path):
-        tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)
+        tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)'''
 
-    # print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
+    print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
