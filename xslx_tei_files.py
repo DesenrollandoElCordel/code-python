@@ -7,7 +7,7 @@ import os
 # Fonction pour la gestion des mots-clés
 def add_list_keywords(keyword):
     # Chemin vers la taxonomie au format .xml
-    tree = eT.parse('')
+    tree = eT.parse('/Users/elinaleblanc/Documents/Postdoctorat/Encodage/TEI_tests/Index_gravures/taxonomy_grabados.xml')
     root = tree.getroot()
     ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
     list_keywords = etree.SubElement(keywords, "term")  # Création d'un <term> pour chaque mot-clé
@@ -32,15 +32,15 @@ def add_keywords(keyword, category, element):
             add_list_keywords(keyword)
 
 
-tree_index_imp = eT.parse("")
+tree_index_imp = eT.parse("/Users/elinaleblanc/Documents/Postdoctorat/Encodage/impresor.xml")
 root_index_imp = tree_index_imp.getroot()
 
-tree_index_lugar = eT.parse("")
+tree_index_lugar = eT.parse("/Users/elinaleblanc/Documents/Postdoctorat/Encodage/lugar_impresion.xml")
 root_index_lugar = tree_index_lugar.getroot()
 
 ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
 
-wb = load_workbook(filename='')
+wb = load_workbook(filename='/Users/elinaleblanc/Documents/Postdoctorat/Index_Pliegos/Index_Grabados_Moreno.xlsx')
 index = wb['Feuil1']
 # print(index)
 
@@ -125,7 +125,7 @@ for i in range(len(title_engravings)):
     figure = etree.SubElement(bibl, "figure")
 
     graphic = etree.SubElement(figure, "graphic", url="",
-                               source=title_engravings[i][0] + ".jpg",
+                               source=title_engravings[i][2] + ".jpg",
                                n=title_engravings[i][3][1:-1])
 
     figDesc = etree.SubElement(figure, "figDesc")
@@ -186,6 +186,9 @@ for i in range(len(title_engravings)):
     change = etree.SubElement(revisionDesc, "change", who="#EL", when="2021-11-22")
     change.text = "Creación del documento"
 
+    facsimile = etree.SubElement(root, "facsimile")
+    thumbnail = etree.SubElement(facsimile, "graphic", url=title_engravings[i][0] + "_thumbnail.jpg")
+
     text = etree.SubElement(root, "text")
     body = etree.SubElement(text, "body")
     paragraph2 = etree.SubElement(body, "p")
@@ -197,7 +200,6 @@ for i in range(len(title_engravings)):
         os.mkdir(path_tei)
 
     filename = title_engravings[i][0] + '.xml'
-    # print(filename)
 
     filename_path = os.path.join(path_tei, filename)
     # print(filename_path)
