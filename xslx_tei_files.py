@@ -10,8 +10,9 @@ def add_list_keywords(keyword):
     tree = eT.parse('/Users/elinaleblanc/Documents/Postdoctorat/Encodage/TEI_tests/Index_gravures/taxonomy_grabados.xml')
     root = tree.getroot()
     ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
-    list_keywords = etree.SubElement(keywords, "term")
+    list_keywords = etree.SubElement(keywords, "term")  # Création d'un <term> pour chaque mot-clé
 
+    # Pour chaque mot-clé du tableau, on vérifie s'il existe dans la taxonomie et on l'ajoute avec un <term>
     for x in root.findall('.//tei:category', ns):
         att = x.get('{http://www.w3.org/XML/1998/namespace}id')
         catdesc = x[0].text
@@ -159,17 +160,17 @@ for i in range(len(title_engravings)):
 
     tree = etree.ElementTree(root)
 
-    '''path_tei = '../TEI_Gravures/'
+    path_tei = '../TEI_Gravures/'
     if not os.path.isdir(path_tei):
-        os.mkdir(path_tei)'''
+        os.mkdir(path_tei)
 
-    # filename = title_engravings[i][0] + '.xml'
+    filename = title_engravings[i][0] + '.xml'
     # print(filename)
 
-    # filename_path = os.path.join(path_tei, filename)
+    filename_path = os.path.join(path_tei, filename)
     # print(filename_path)
 
-    '''if not os.path.isfile(filename_path):
-        tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)'''
+    if not os.path.isfile(filename_path):
+        tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)
 
-    print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
+    # print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
