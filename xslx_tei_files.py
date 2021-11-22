@@ -30,7 +30,7 @@ def add_keywords(keyword, category, element):
             add_list_keywords(keyword)
 
 
-wb = load_workbook(filename='/Users/elinaleblanc/Downloads/Index_Grabados_Moreno.xlsx')
+wb = load_workbook(filename='/Users/elinaleblanc/Documents/Postdoctorat/Index_Pliegos/Index_Grabados_Moreno.xlsx')
 index = wb['Feuil1']
 # print(index)
 
@@ -42,7 +42,7 @@ for row in index.iter_rows(max_row=1, max_col=25, values_only=True):
 
 # Récupération des descriptions
 title_engravings = []
-for row in index.iter_rows(min_row=2, max_row=10, max_col=25, values_only=True):
+for row in index.iter_rows(min_row=2, max_row=15, max_col=25, values_only=True):
     row_list = list(row)
     title_engravings.append(row_list)
 # print(title_engravings)
@@ -77,7 +77,12 @@ for i in range(len(title_engravings)):
 
     publisher = etree.SubElement(bibl, "publisher")
     publisher.text = title_engravings[i][6]
-    pubPlace = etree.SubElement(bibl, "pubPlace", ref="https://www.geonames.org/2520118/carmona.html")
+    if "Moreno" in title_engravings[i][6]:
+        publisher.set("corresp", "impresor.xml#moreno")
+    else:
+        publisher.set("corresp", "impresor.xml#belloso")
+
+    pubPlace = etree.SubElement(bibl, "pubPlace", ref="https://www.geonames.org/2520118/carmona.html", corresp="lugar.xml#carmona")
     pubPlace.text = "Carmona (Sevilla)"
     date = etree.SubElement(bibl, "date")
     date.text = str(title_engravings[i][5])
@@ -105,12 +110,14 @@ for i in range(len(title_engravings)):
             for s in sameAs_split:
                 item = etree.SubElement(list_sameAs, "item")
                 ptr = etree.SubElement(item, "ptr", sameAs=s + ".xml")
+                ptr.text = s
                 locus2 = etree.SubElement(item, "locus")
                 date2 = etree.SubElement(item, "date")
         else:
             list_sameAs.set("n", "1")
             item = etree.SubElement(list_sameAs, "item")
             ptr = etree.SubElement(item, "ptr", sameAs=title_engravings[i][24] + '.xml')
+            ptr.text = title_engravings[i][24]
             locus2 = etree.SubElement(item, "locus")
             date2 = etree.SubElement(item, "date")
 
@@ -150,17 +157,17 @@ for i in range(len(title_engravings)):
 
     tree = etree.ElementTree(root)
 
-    path_tei = '../TEI_Gravures/'
+    '''path_tei = '../TEI_Gravures/'
     if not os.path.isdir(path_tei):
-        os.mkdir(path_tei)
+        os.mkdir(path_tei)'''
 
-    filename = title_engravings[i][0] + '.xml'
+    # filename = title_engravings[i][0] + '.xml'
     # print(filename)
 
-    filename_path = os.path.join(path_tei, filename)
+    # filename_path = os.path.join(path_tei, filename)
     # print(filename_path)
 
-    if not os.path.isfile(filename_path):
-        tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)
+    '''if not os.path.isfile(filename_path):
+        tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)'''
 
-    # print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
+    print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
