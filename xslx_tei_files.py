@@ -7,7 +7,7 @@ import os
 # Fonction pour la gestion des mots-clés
 def add_list_keywords(keyword):
     # Chemin vers la taxonomie au format .xml
-    tree = eT.parse('/Users/elinaleblanc/Documents/Postdoctorat/Encodage/TEI_tests/Index_gravures/taxonomy_grabados.xml')
+    tree = eT.parse('')
     root = tree.getroot()
     ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
     list_keywords = etree.SubElement(keywords, "term")  # Création d'un <term> pour chaque mot-clé
@@ -32,15 +32,15 @@ def add_keywords(keyword, category, element):
             add_list_keywords(keyword)
 
 
-tree_index_imp = eT.parse("/Users/elinaleblanc/Documents/Postdoctorat/Encodage/impresor.xml")
+tree_index_imp = eT.parse("")
 root_index_imp = tree_index_imp.getroot()
 
-tree_index_lugar = eT.parse("/Users/elinaleblanc/Documents/Postdoctorat/Encodage/lugar_impresion.xml")
+tree_index_lugar = eT.parse("")
 root_index_lugar = tree_index_lugar.getroot()
 
 ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
 
-wb = load_workbook(filename='/Users/elinaleblanc/Documents/Postdoctorat/Index_Pliegos/Index_Grabados_Moreno.xlsx')
+wb = load_workbook(filename='')
 index = wb['Feuil1']
 # print(index)
 
@@ -52,7 +52,7 @@ for row in index.iter_rows(max_row=1, max_col=25, values_only=True):
 
 # Récupération des descriptions
 title_engravings = []
-for row in index.iter_rows(min_row=2, max_row=15, max_col=26, values_only=True):
+for row in index.iter_rows(min_row=2, max_row=619, max_col=26, values_only=True):
     row_list = list(row)
     title_engravings.append(row_list)
 # print(title_engravings)
@@ -79,7 +79,8 @@ for i in range(len(title_engravings)):
     pubStmt_child1 = etree.SubElement(pubStmt, "authority")
     pubStmt_child1.text = "Bibliothèque Universitaire de Genève (BUNIGE)"
     pubStmt_child2 = etree.SubElement(pubStmt, "availability", status="restricted")
-    licence = etree.SubElement(pubStmt_child2, "licence", n="cc by nc sa", target="https://creativecommons.org/licenses/by-nc-sa/4.0/")
+    licence = etree.SubElement(pubStmt_child2, "licence", n="cc by nc sa",
+                               target="https://creativecommons.org/licenses/by-nc-sa/4.0/")
 
     sourceDesc = etree.SubElement(fileDesc, "sourceDesc")
     bibl = etree.SubElement(sourceDesc, "bibl")
@@ -204,4 +205,5 @@ for i in range(len(title_engravings)):
     if not os.path.isfile(filename_path):
         tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)
 
+    print(title_engravings[i][0] + " => done")
     # print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
