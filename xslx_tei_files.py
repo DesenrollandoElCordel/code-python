@@ -106,18 +106,29 @@ for i in range(len(title_engravings)):
             pubPlace.set("corresp", "lugar.xml#" + title_engravings[i][7])
 
     date = etree.SubElement(bibl, "date")
-    date.text = str(title_engravings[i][5])
+    date_text = str(title_engravings[i][5])
+    date.text = date_text
     if title_engravings[i][5] == "[s.a.]":
         date.set("when", "1800")
         date.set("cert", "low")
+    elif "[?]" in date_text:
+        date_medium = title_engravings[i][5][:4]
+        date.set("when", date_medium)
+        date.set("cert", "medium")
     else:
-        date.set("when", str(title_engravings[i][5]))
+        date.set("when", date_text)
         date.set("cert", "high")
 
     ident = etree.SubElement(bibl, "ident", type="DOI")
 
     figure = etree.SubElement(bibl, "figure")
-    graphic = etree.SubElement(figure, "graphic", url="")
+
+    coord_split = title_engravings[i][3].split(",")
+    graphic = etree.SubElement(figure, "graphic", url="",
+                               source=title_engravings[i][0] + ".jpg",
+                               ulx=coord_split[0][1:], uly=coord_split[1],
+                               lrx=coord_split[2], lry=coord_split[3][:-1],)
+
     figDesc = etree.SubElement(figure, "figDesc")
     locus1 = etree.SubElement(figDesc, "locus", target=title_engravings[i][1]+".xml")
     locus1.text = title_engravings[i][4]
