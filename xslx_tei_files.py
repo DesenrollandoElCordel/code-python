@@ -6,6 +6,7 @@ import os
 
 # Fonction pour la gestion des mots-clés
 def add_list_keywords(keyword):
+    # Chemin vers la taxonomie au format .xml
     tree = eT.parse('/Users/elinaleblanc/Documents/Postdoctorat/Encodage/TEI_tests/Index_gravures/taxonomy_grabados.xml')
     root = tree.getroot()
     ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
@@ -49,7 +50,8 @@ for row in index.iter_rows(min_row=2, max_row=15, max_col=25, values_only=True):
 
 # Création des fichiers .xml
 for i in range(len(title_engravings)):
-    root = etree.Element("TEI", xmlns="http://www.tei-c.org/ns/1.0", xmlid=title_engravings[i][0])
+    root = etree.Element("TEI", xmlns="http://www.tei-c.org/ns/1.0")
+    root.set("{http://www.w3.org/XML/1998/namespace}id", title_engravings[i][0])
     teiHeader = etree.SubElement(root, "teiHeader")
 
     fileDesc = etree.SubElement(teiHeader, "fileDesc")
