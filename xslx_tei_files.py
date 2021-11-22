@@ -62,6 +62,8 @@ for i in range(len(title_engravings)):
 
     respStmt = etree.SubElement(titleStmt, "respStmt")
     name = etree.SubElement(respStmt, "name")
+    name.set("{http://www.w3.org/XML/1998/namespace}id", "EL")
+    name.text = "Elina Leblanc"
     resp = etree.SubElement(respStmt, "resp")
     resp.text = "Codificación TEI"
 
@@ -153,6 +155,10 @@ for i in range(len(title_engravings)):
     add_keywords(title_engravings[i][21], list_name_columns[0][21], textClass)  # Catégorie 'ambiente_natural'
     add_keywords(title_engravings[i][22], list_name_columns[0][22], textClass)  # Catégorie 'ambiente_maritimo'
     add_keywords(title_engravings[i][23], list_name_columns[0][23], textClass)  # Catégorie 'elementos_decorativos'
+
+    revisionDesc = etree.SubElement(teiHeader, "revisionDesc")
+    change = etree.SubElement(revisionDesc, "change", who="#EL", when="2021-11-22")
+    change.text = "Creación del documento"
 
     text = etree.SubElement(root, "text")
     body = etree.SubElement(text, "body")
