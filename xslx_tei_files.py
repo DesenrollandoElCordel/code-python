@@ -112,15 +112,15 @@ for i in range(len(title_engravings)):
             list_sameAs.set("n", str(len(sameAs_split)))
             for s in sameAs_split:
                 item = etree.SubElement(list_sameAs, "item")
-                ptr = etree.SubElement(item, "ptr", sameAs=s + ".xml")
-                ptr.text = s
+                title_sameAs = etree.SubElement(item, "title", corresp=s + ".xml")
+                title_sameAs.text = s
                 locus2 = etree.SubElement(item, "locus")
                 date2 = etree.SubElement(item, "date")
         else:
             list_sameAs.set("n", "1")
             item = etree.SubElement(list_sameAs, "item")
-            ptr = etree.SubElement(item, "ptr", sameAs=title_engravings[i][24] + '.xml')
-            ptr.text = title_engravings[i][24]
+            title_sameAs = etree.SubElement(item, "title", corresp=title_engravings[i][24] + '.xml')
+            title_sameAs.text = title_engravings[i][24]
             locus2 = etree.SubElement(item, "locus")
             date2 = etree.SubElement(item, "date")
 
