@@ -1,0 +1,24 @@
+from openpyxl import Workbook
+
+# Creation of the file
+wb = Workbook()
+wb_filename = "../mapping_pliegos_metadata.xlsx"
+
+# Creation of the sheet
+ws1 = wb.active
+ws1.title = "metadata"
+
+# Columns' title
+ws1['A1'] = 'Titúlo'
+ws1['B1'] = 'Lugar'
+ws1['C1'] = 'Impresor'
+ws1['D1'] = 'Fecha'
+ws1['E1'] = 'Páginas'
+ws1['F1'] = 'Ilustraciones'
+ws1['G1'] = 'Dimensiones'
+ws1['H1'] = 'Número impresor'
+
+# Get title data
+
+
+wb.save(filename=wb_filename)
