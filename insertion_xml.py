@@ -1,7 +1,7 @@
 import os
 import xml.etree.ElementTree as ET
 
-folder = ""
+folder = "/Users/elinaleblanc/Documents/Postdoctorat/Encodage/Moreno-TEI-files"
 # print(folder)
 
 for f in os.listdir(folder):
@@ -14,14 +14,22 @@ for f in os.listdir(folder):
         tree = ET.parse(xml_path)
         root = tree.getroot()
 
-        encodingDesc = root.find(".//tei:encodingDesc", ns)
-        # print(encodingDesc)
+        authority = root.find(".//tei:authority", ns)
+        # print(authority)
+        authority.set("role", "rightsHolder")
+
+        editorialDecl = root.find(".//tei:editorialDecl", ns)
+        # print(editorialDecl)
+        editorialDecl.set("corresp", "#automaticTranscription")
+
+        '''encodingDesc = root.find(".//tei:encodingDesc", ns)
+        print(encodingDesc)
         project = ET.Element('projectDesc')
         encodingDesc.insert(0, project)
         ET.SubElement(project, "p")
         for y in project.iter('p'):
             description = 'Este archivo fue creado en el marco del proyecto Desenrollando el Cordel/Démêler le cordel/Untangling the cordel, dirigido por la profesora Constance Carta de la Universidad de Ginebra, con el apoyo de la Fundación filantrópica Famille Sandoz-Monique de Meuron.'
-            y.text = str(description)
+            y.text = str(description)'''
 
         '''cc = root.find(".//tei:availability", ns)
         cc.remove(cc[0])'''
