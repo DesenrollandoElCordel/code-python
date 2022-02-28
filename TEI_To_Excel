@@ -17,14 +17,26 @@ def data_to_cell(list_item, path, ws, nb_row, nb_col):
 wb = Workbook()
 wb_filename = "../mapping_pliegos_metadata.xlsx"
 
-# Creation of the sheet
+# Creation of the worksheet
 ws1 = wb.active
 ws1.title = "metadata"
 
-folder = '/Users/elinaleblanc/Documents/Postdoctorat/Encodage/Moreno-TEI-files'
+# Folder with TEI Files
+folder = ''
 
+# Lists for XML Data
+id_list = []
 title_list = []
+place_list = []
+date_list = []
+editor_list = []
+page_list = []
+illustration_list = []
+format_list = []
+num_imp_list = []
 
+
+# Addition of data to XLSX worksheet
 for f in os.listdir(folder):
     if f.endswith('.xml'):
         xml_path = os.path.join(folder, f)
@@ -36,15 +48,21 @@ for f in os.listdir(folder):
         xml_tree = eT.parse(xml_path)
         root = xml_tree.getroot()
 
-        data_to_cell(title_list, './/tei:fileDesc/tei:titleStmt/tei:title',ws1,1,1)
-
-        '''for title in root.findall('.//tei:fileDesc/tei:titleStmt/tei:title', ns):
-            title_list.append(title.text)
-
+        # Specific case for id
+        id_list.append(label)
         row = 1
-        column = 1
-        for item in title_list:
-            ws1.cell(column=column, row=row, value=item)
-            row += 1'''
+        for id in id_list:
+            ws1.cell(column=1, row=row, value=id)
+            row += 1
+
+        data_to_cell(title_list, './/tei:fileDesc/tei:titleStmt/tei:title', ws1, 1, 2)
+        data_to_cell(place_list, './/tei:pubPlace', ws1, 1, 3)
+        data_to_cell(date_list, './/tei:date', ws1, 1, 4)
+        data_to_cell(editor_list, './/tei:publisher[1]', ws1, 1, 5)
+        data_to_cell(page_list, './/tei:extent', ws1, 1, 6)
+        data_to_cell(format_list, './/tei:dim', ws1, 1, 7)
+        data_to_cell(num_imp_list, './/tei:altIdentifier/tei:idno', ws1, 1, 8)
+
+        print(label + ": done")
 
 wb.save(filename=wb_filename)
