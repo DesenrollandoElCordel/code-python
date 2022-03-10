@@ -5,7 +5,7 @@ import xml.etree.ElementTree as eT
 
 # Arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('--xml', default='../Encodage/TEI_tests/', type=str, help="Le chemin du dossier des fichiers xml à charger.")
+parser.add_argument('--xml', default='../Encodage/engravings-catalogue/xml-files', type=str, help="Le chemin du dossier des fichiers xml à charger.")
 parser.add_argument('--csv', default='../pliegos_iiif.csv', type=str, help="Le chemin du fichier CSV contenant les URI IIIF")
 args = parser.parse_args()
 
