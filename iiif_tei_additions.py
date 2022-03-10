@@ -5,7 +5,7 @@ import argparse
 
 # Arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('--xml', default='../Encodage/TEI_tests/', type=str, help="Le chemin du dossier des fichiers xml à charger.")
+parser.add_argument('--xml', default='../Encodage/Moreno-TEI-files/', type=str, help="Le chemin du dossier des fichiers xml à charger.")
 parser.add_argument('--csv', default='../pliegos_iiif.csv', type=str, help="Le chemin du fichier CSV contenant les URI IIIF")
 args = parser.parse_args()
 
@@ -33,6 +33,7 @@ for xmlFile in os.listdir(args.xml):
 
                     # Linking IIIF Manifest URI to TEI <facsimile>
                     facsimile = root.find(".//tei:facsimile", ns)
-                    facsimile.set('facs', list_rows[i][9])
+                    if facsimile is not None:
+                        facsimile.set('facs', list_rows[i][9])
 
         tree.write(xml_path, encoding="UTF-8", xml_declaration=True)
