@@ -4,13 +4,13 @@ import xml.etree.ElementTree as eT
 import os
 
 
-# Fonction pour la gestion des mots-clés
+# Creation of a list with <term>
 def add_list_keywords(keyword):
-    # Chemin vers la taxonomie au format .xml
-    tree = eT.parse('/Users/elinaleblanc/Documents/Postdoctorat/Encodage/TEI_tests/Index_gravures/taxonomy_grabados.xml')
+    # Path to the XML taxonomy
+    tree = eT.parse('')
     root = tree.getroot()
     ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
-    list_keywords = etree.SubElement(keywords, "term")  # Création d'un <term> pour chaque mot-clé
+    list_keywords = etree.SubElement(keywords, "term")
 
     # Pour chaque mot-clé du tableau, on vérifie s'il existe dans la taxonomie et on l'ajoute avec un <term>
     for x in root.findall('.//tei:category', ns):
@@ -20,9 +20,10 @@ def add_list_keywords(keyword):
             list_keywords.text = catdesc
 
 
+# Creation of a list of keywords with <catRef>
 def add_keywords(keyword, category, element):
     if keyword is not None:
-        if "," in keyword:  # Gestion des catégories avec plusieurs mots-clés
+        if "," in keyword:  # For categories with several keywords
             keyword_split = keyword.split(",")
             for k in keyword_split:
                 catref = etree.SubElement(element, "catRef", scheme="#" + category, target="#" + k)

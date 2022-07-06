@@ -56,7 +56,8 @@ for subdir, dirs, files in os.walk(args.xml):
                     for k in range(len(list_coord_int)):
                         image = cv2.imread(image_path)
                         mask = np.zeros(image.shape[0:2], dtype=np.uint8)
-                        # Pour éviter les pbs avec l'ordre des coordonnées, on définit une zone à partir de toutes les coordonnées
+                        # Pour éviter les pbs avec l'ordre des coordonnées,
+                        # on définit une zone à partir de toutes les coordonnées
                         points = np.array([[[list_coord_int[k][0], list_coord_int[k][1]],
                                             [list_coord_int[k][2], list_coord_int[k][3]],
                                             [list_coord_int[k][4], list_coord_int[k][5]],
