@@ -10,7 +10,7 @@ args = parser.parse_args()
 
 # Creation of the file
 wb = Workbook()
-wb_filename = "../Index_Grabados_Varios.xlsx"
+wb_filename = ""  # Name of the workbook
 
 # Creation of the worksheet
 ws1 = wb.active
@@ -18,7 +18,6 @@ ws1.title = "metadata"
 
 # Lists for XML data
 list_woodcuts = []
-list_title = []
 
 # Iteration through the folders and files
 for subdir, dirs, files in os.walk(args.alto):
@@ -45,21 +44,14 @@ for subdir, dirs, files in os.walk(args.alto):
 
                 # For each XML file with an image, we get filename information
                 for ImgName in root.findall('.//alto:fileName', ns):
-                    pliegoName = ImgName.text[:-6]  # Id of the pliego
-                    pageName = ImgName.text[:-4]  # Number of the page
+                    pliegoName = ImgName.text[:-6]  # Document identifier
+                    pageName = ImgName.text[:-4]  # Page Number
                     woodcutCounter = woodcutCounter + 1  # We count the number of images per file
-                    woodcutName = 'grabado_v' + ImgName.text[6:-5] + str(woodcutCounter)  # Id of the woodcut
-
-                    # Detection of the title block (#BT223) in Alto-XML, following the SegmOnto identifier
-                    pliegoTitle = root.find('.//alto:TextBlock[@TAGREFS="BT223"]/alto:TextLine[1]//alto:String', ns)
-                    if label.endswith('_1') and pliegoTitle is not None:
-                        list_title = pliegoTitle.get('CONTENT')  # We temporaly put the title in a list during the iteration
-                    else:
-                        list_title = 'None'
+                    woodcutName = 'grabado_v' + ImgName.text[6:-5] + str(woodcutCounter)  # Woodcut identifier
 
                     # All the information are put in a nested list
                     for i in range(len(ImgBlock)):
-                        list_woodcuts.append([woodcutName, pliegoName, pageName, coords, list_title.lower()])
+                        list_woodcuts.append([woodcutName, pliegoName, pageName, coords])
 
                     # From the information in list_woodcuts, we create the Excel file
                     row = 1  # Initialisation of the row
@@ -68,7 +60,6 @@ for subdir, dirs, files in os.walk(args.alto):
                         ws1.cell(column=2, row=row, value=x[1])
                         ws1.cell(column=3, row=row, value=x[2])
                         ws1.cell(column=4, row=row, value=x[3])
-                        ws1.cell(column=5, row=row, value=x[4])
                         row += 1  # Incrementation of the row
 
 print(list_woodcuts)
