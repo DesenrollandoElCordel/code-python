@@ -5,45 +5,41 @@ folder_name = "Images"
 
 for filename in os.listdir(folder_name):
     if filename.endswith(".jpg"):
-        image_path = os.path.join(folder_name, filename)  # Création du chemin vers l'image
-        # print(image_path)
-        label, ext = os.path.splitext(filename)  # Récupération du nom de l'image
-        # print(label[-2])
+        image_path = os.path.join(folder_name, filename)  # Path to the image
+        label, ext = os.path.splitext(filename)  # Splitting of the filename
 
-        path_img_cropped = 'Images_Decoupees/'  # Création du dossier pour sauvegarder les nouvelles images
+        # New folder to save the cropped images
+        path_img_cropped = 'Images_Decoupees/'
         if not os.path.isdir(path_img_cropped):
             os.mkdir(path_img_cropped)
 
-        image = cv2.imread(image_path)  # Lecture de l'image
-        h, w = image.shape[:2]  # Récupération de la hauteur et de la largeur
+        image = cv2.imread(image_path)
+        h, w = image.shape[:2]  # We get the width and height of the image
 
-        if label[-2] == '-' or label[-3] == '-':  # Pour les pages doubles, on coupe l'image en deux
+        if label[-2] == '-' or label[-3] == '-':  # For double-page images, we cut them in half
             page_gauche = image[0:h, 0:int(w / 2)]
             page_droite = image[0:h, int(w / 2):w]
 
-            if len(label) == 16:  # Renommage des fichiers pour les pliegos de plus de 10 pages
+            if len(label) == 16:  # File renaming for documents longer than 10 pages
                 page_gauche_name = label[:11] + label[-5:-3] + ext
                 page_droite_name = label[:11] + label[-2:] + ext
-                # print(page_gauche_name)
-                page_gauche_path = path_img_cropped + page_gauche_name
-                page_droite_path = path_img_cropped + page_droite_name
-                if not os.path.isfile(page_droite_path or page_gauche_path):
+                page_gauche_path = path_img_cropped + page_gauche_name  # New path for the left page
+                page_droite_path = path_img_cropped + page_droite_name  # New path for the right page
+                if not os.path.isfile(page_droite_path or page_gauche_path):  # Image saving
                     cv2.imwrite(page_gauche_path, page_gauche)
                     cv2.imwrite(page_droite_path, page_droite)
 
-            else:  # Renommage des fichiers pour les pliegos de moins de 10 pages
+            else:  # File renaming for documents lesser than 10 pages
                 page_gauche_name = label[:11] + label[-3] + ext
                 page_droite_name = label[:11] + label[-1] + ext
-                # print(page_droite_name)
-                page_gauche_path = path_img_cropped + page_gauche_name
-                page_droite_path = path_img_cropped + page_droite_name
-                # print(page_gauche_path)
-                if not os.path.isfile(page_droite_path or page_gauche_path):
+                page_gauche_path = path_img_cropped + page_gauche_name  # New path for the left page
+                page_droite_path = path_img_cropped + page_droite_name  # New path for the right page
+                if not os.path.isfile(page_droite_path or page_gauche_path):  # Image saving
                     cv2.imwrite(page_gauche_path, page_gauche)
                     cv2.imwrite(page_droite_path, page_droite)
 
-        else:  # Pour les pages seules entourées de noir, on enlève 1/4 de l'image
+        else:  # For the images with one page, one quarter of the image is removed
             page = image[0:int((h / 4) * 3), int(w / 4):w]
-            page_path = path_img_cropped + filename
+            page_path = path_img_cropped + filename  # New path for the page
             if not os.path.isfile(page_path):
                 cv2.imwrite(page_path, page)
