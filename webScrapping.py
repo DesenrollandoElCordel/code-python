@@ -22,7 +22,7 @@ item_data = []  # List with data about documents (Manifest, title, country, city
 manifests_url = []  # List with the manifests URLs
 
 # We browse the pages with the list of documents (Range = number of pages to browse)
-for url in range(7, 8):
+for url in range(138, 139):
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))  # Installation of the WebDriver
     driver.get(url_base + str(url))  # URL to be scrapped (Concatenation of Base URL and the nb of pages)
     time.sleep(5)  # Number of seconds before the Web page is closed
@@ -65,9 +65,13 @@ for m in manifests_url:
             places = list(i.values())
             # We get the second element of the list (Ex: 'Spain; S.l.')
             # We split it to have the country one side and the city on the other side
-            place = places[1].split(";")
-            city = place[1]
-            country = place[0]
+            if ";" in places[1]:
+                place = places[1].split(";")
+                city = place[1]
+                country = place[0]
+            else:
+                city = "S.l"
+                country = places[1]
         if "Date of Publication" in i.values():
             date = list(i.values())[1]
         if "Title" in i.values():
