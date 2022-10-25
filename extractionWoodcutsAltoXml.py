@@ -36,10 +36,10 @@ for subdir, dirs, files in os.walk(args.alto):
 
             # Detection of image block (#BT224) in Alto-XML, following the SegmOnto identifier
             for ImgBlock in root.findall('.//alto:TextBlock[@TAGREFS="BT224"]', ns):
-                xStart = int(ImgBlock.get('HPOS')[:-2])  # Upper Left X (ulx)
-                yStart = int(ImgBlock.get('VPOS')[:-2])  # Upper Left Y (uly)
-                xEnd = int(ImgBlock.get('WIDTH')[:-2]) + xStart  # Lower right X (lrx) = Width + ulx
-                yEnd = int(ImgBlock.get('HEIGHT')[:-2]) + yStart  # Lower right Y (lry) = Height + uly
+                xStart = float(ImgBlock.get('HPOS'))  # Upper Left X (ulx)
+                yStart = float(ImgBlock.get('VPOS'))  # Upper Left Y (uly)
+                xEnd = float(ImgBlock.get('WIDTH')) + xStart  # Lower right X (lrx) = Width + ulx
+                yEnd = float(ImgBlock.get('HEIGHT')) + yStart  # Lower right Y (lry) = Height + uly
                 coords = str(xStart) + "," + str(yStart) + "," + str(xEnd) + "," + str(yEnd)  # List of coordinates
 
                 # For each XML file with an image, we get filename information
