@@ -1,25 +1,33 @@
 import xml.etree.ElementTree as eT
 
-ner_file = "../Encodage/moreno_035/Moreno_035.xml"
+ner_file = "../Encodage/moreno_035/Moreno_035.conll"
+xml_file = "../Encodage/Moreno-TEI-files/Moreno_035.xml"
 
-tree = eT.parse(ner_file)
-root = tree.getroot()
-# print(root)
+with open(ner_file, 'r') as f:
+    text = f.read()
 
-ner_list = []
-ne = ""
+ner_list_raw = []
+ner_list_normalized = []
 
-for loc in root.findall(".//de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token/de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity"):
-    wkd = loc.get('identifier')
-    ner_list.append([loc.text, wkd])
+new_text = text.split('\n')
+for line in new_text:
+    if line.endswith('LOC'):
+        ner_list_raw.append(line)
 
-for loc in root.findall(".//de.tudarmstadt.ukp.dkpro.core.api.ner.type.NamedEntity"):
-    listloc = list(loc)
-    wkd = loc.get('identifier')
-    if (len(listloc) > 1):
-        new_loc = ""
-        for ne in listloc:
-            new_loc += str(ne.text) + " "
-            # print(new_loc + " ")
-        ner_list.append([new_loc, wkd])
-print(ner_list)
+for i, e in enumerate(ner_list_raw):
+    # print(i, '->', e)
+    if e.endswith('I-LOC') and ner_list_raw[i-1].endswith('B-LOC'):
+        # Enlever e de la liste ner_list_raw
+        new_ILOC = e.replace(" I-LOC", "")
+        new_BLOC = ner_list_raw[i-1].replace(" B-LOC", "")
+        ner_list_normalized.append(new_BLOC + " " + new_ILOC)
+        ner_list_raw.remove(e)
+        ner_list_raw.pop(i-1)
+        # print(ner_list_raw[i-1] + " " + e)
+# print(ner_list_raw)
+
+for l in ner_list_raw:
+    new_loc = l.replace(" B-LOC", "")
+    ner_list_normalized.append(new_loc)
+# print(ner_list_normalized)
+
