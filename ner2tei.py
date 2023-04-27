@@ -8,26 +8,67 @@ with open(ner_file, 'r') as f:
 
 ner_list_raw = []
 ner_list_normalized = []
+ner_list_deduplicated = []
 
+# On découpe le texte par ligne
 new_text = text.split('\n')
+
+# Pour chaque ligne, si elle finit par 'LOC', on l'ajoute à la liste ner_list_raw
 for line in new_text:
     if line.endswith('LOC'):
         ner_list_raw.append(line)
 
+# Boucle spéciale pour les noms de lieux avec plusieurs tokens (B-LOC + I-LOC)
+# On récupére l'index (i) et chaque élément (e) de ner_list_raw
 for i, e in enumerate(ner_list_raw):
     # print(i, '->', e)
+    # On cible uniquement les éléments qui finissent par 'I-LOC' et dont l'élément précédent est un 'B-LOC'
     if e.endswith('I-LOC') and ner_list_raw[i-1].endswith('B-LOC'):
-        # Enlever e de la liste ner_list_raw
-        new_ILOC = e.replace(" I-LOC", "")
-        new_BLOC = ner_list_raw[i-1].replace(" B-LOC", "")
-        ner_list_normalized.append(new_BLOC + " " + new_ILOC)
-        ner_list_raw.remove(e)
-        ner_list_raw.pop(i-1)
+        new_ILOC = e.replace(" I-LOC", "")  # On enlève 'I-LOC'
+        new_BLOC = ner_list_raw[i-1].replace(" B-LOC", "")  # On enlève 'B-LOC'
+        ner_list_normalized.append(new_BLOC + " " + new_ILOC)  # On concatène les tokens pour reformer le nom de lieu
+        ner_list_raw.remove(e)  # On enlève l'élément avec 'I-LOC' de ner_list_raw
+        ner_list_raw.pop(i-1)  # On enlève l'élément avec 'B-LOC' de ner_list_raw
         # print(ner_list_raw[i-1] + " " + e)
 # print(ner_list_raw)
 
+# Boucle pour les autres noms de lieux
 for l in ner_list_raw:
-    new_loc = l.replace(" B-LOC", "")
-    ner_list_normalized.append(new_loc)
+    new_loc = l.replace(" B-LOC", "")  # On enlève 'B-LOC'
+    ner_list_normalized.append(new_loc)  # On ajoute les noms de lieux à ner_list_normalized
 # print(ner_list_normalized)
+ner_list_normalized.sort()  # On trie les lieux par ordre alphabétique
 
+# On crée une liste spéciale sans doublons
+for item in ner_list_normalized:
+    if item not in ner_list_deduplicated:
+        ner_list_deduplicated.append(item)
+# print(ner_list_deduplicated)
+
+tree = eT.parse(xml_file)  # On parse le fichier XML-TEI
+root = tree.getroot()  # On récupére la racine du fichier TEI
+
+# Déclaration du namespace
+ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
+eT.register_namespace('', 'http://www.tei-c.org/ns/1.0')
+
+# Encodage des noms de lieu dans le texte
+for l in root.findall(".//tei:l", ns):
+    for i in range(len(ner_list_deduplicated)):
+        # print(ner_list[i])
+        if ner_list_deduplicated[i] in l.text:
+            new_line = l.text.replace(ner_list_deduplicated[i], '<name>' + ner_list_deduplicated[i] + '</name>')
+            l.text = new_line
+
+sourceDesc = root.find('.//tei:sourceDesc', ns)
+listPlace = eT.SubElement(sourceDesc, 'listPlace')
+
+for place in ner_list_deduplicated:
+    placeElement = eT.SubElement(listPlace, "place")
+    placeName = eT.SubElement(placeElement, "placeName")
+    placeName.text = place.title()
+    placeNb = ner_list_normalized.count(place)
+    placeElement.set("n", str(placeNb))
+
+# eT.dump(sourceDesc)
+# tree.write(xml_file, encoding="UTF-8", xml_declaration=True)
