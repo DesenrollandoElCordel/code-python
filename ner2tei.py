@@ -54,21 +54,24 @@ eT.register_namespace('', 'http://www.tei-c.org/ns/1.0')
 
 # Encodage des noms de lieu dans le texte
 for l in root.findall(".//tei:l", ns):
+    # On récupère l'index de chaque élément de la liste
     for i in range(len(ner_list_deduplicated)):
         # print(ner_list[i])
+        # On vérifie que le nom de lieu est dans le texte et on l'encode avec <name>
         if ner_list_deduplicated[i] in l.text:
             new_line = l.text.replace(ner_list_deduplicated[i], '<name>' + ner_list_deduplicated[i] + '</name>')
             l.text = new_line
 
-sourceDesc = root.find('.//tei:sourceDesc', ns)
-listPlace = eT.SubElement(sourceDesc, 'listPlace')
+# Encodage des noms de lieu dans le teiHeader
+sourceDesc = root.find('.//tei:sourceDesc', ns)  # On récupère l'élément <sourceDesc>
+listPlace = eT.SubElement(sourceDesc, 'listPlace')  # On ajoute à <sourceDesc> l'élément <listPlace>
 
 for place in ner_list_deduplicated:
-    placeElement = eT.SubElement(listPlace, "place")
-    placeName = eT.SubElement(placeElement, "placeName")
-    placeName.text = place.title()
-    placeNb = ner_list_normalized.count(place)
-    placeElement.set("n", str(placeNb))
+    placeElement = eT.SubElement(listPlace, "place")  # On ajoute l'élément <place>
+    placeName = eT.SubElement(placeElement, "placeName")  # Puis l'élément <placeName>
+    placeName.text = place.title()  # On ajoute à <placeName> les noms de lieux en rétablissant les majuscules
+    placeNb = ner_list_normalized.count(place)  # On compte le nb de fois où le nom de lieu apparaît dans le texte
+    placeElement.set("n", str(placeNb))  # On ajoute à <placeName> un @n avec le nb d'occurrences du lieu
 
 # eT.dump(sourceDesc)
 # tree.write(xml_file, encoding="UTF-8", xml_declaration=True)
