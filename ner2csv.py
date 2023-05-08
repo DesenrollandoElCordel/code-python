@@ -3,7 +3,6 @@ import pandas as pd
 
 ner_folder = "../Encodage/moreno_035"
 
-ner_list = []
 ner_list_concat = []
 
 for file in os.listdir(ner_folder):
@@ -14,6 +13,7 @@ for file in os.listdir(ner_folder):
             text = f.read()
             # print(text)
 
+        ner_list = []
         lines = text.split('\n')  # On découpe le texte ligne par ligne
 
         # Pour chaque ligne, si elle finit par 'LOC', on l'ajoute à ner_list
@@ -42,8 +42,8 @@ for file in os.listdir(ner_folder):
                 new_loc = l.replace(" B-LOC", "")  # On enlève 'B-LOC'
                 ner_list_concat.append([label.title(), new_loc])  # On ajoute les noms de lieux à ner_list_concat
         ner_list_concat.sort()  # On trie les lieux par ordre alphabétique
-# print(ner_list_concat)
+print(ner_list_concat)
 
 df = pd.DataFrame(ner_list_concat, columns=['id_doc', 'original_name'])  # On crée un DataFrame à partir de la liste
 # print(df)
-df.to_csv("../Encodage/moreno_035/nerList_v1.csv", encoding='utf-8')  # On exporte en CSV
+# df.to_csv("../Encodage/moreno_035/nerList_v1.csv", encoding='utf-8')  # On exporte en CSV
