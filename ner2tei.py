@@ -43,14 +43,23 @@ for file in os.listdir(xml_folder):  # On parcourt le dossier contenant les fich
                     pubPlace = root.find('.//tei:pubPlace', ns).text
                     typeText = root.find('.//tei:keywords/tei:term', ns).text
 
+                    # On récupère la longitude et la latitude
+                    new_coords = line[5].split(' ')
+                    long = new_coords[0][6:]
+                    lat = new_coords[1][:-1]
+
                     # On ajoute ces informations à la fin de chaque ligne
+                    line.append(long)
+                    line.append(lat)
                     line.append(shortTitle)
                     line.append(pubPlace)
                     line.append(printer)
                     line.append(typeText)
+                    line.append('https://desenrollandoelcordel.unige.ch/Pliegos/' + file)
+
                     # On ajoute la nouvelle ligne à la new_csvLine
                     new_csvLine.append(line)
-                    # print(shortTitle)
+                    # print(line)
 
             # On retire les doublons de la nested list loc_list_normalized_geo
             total_geo = {}
@@ -99,13 +108,13 @@ for file in os.listdir(xml_folder):  # On parcourt le dossier contenant les fich
         # print('\n')
 
         # On modifie les fichiers TEI
-        tree.write(xml_path, encoding="UTF-8", xml_declaration=True)
-        print(file + ": DONE.")
+        # tree.write(xml_path, encoding="UTF-8", xml_declaration=True)
+        # print(file + ": DONE.")
 
 # Création d'un nouveau fichier CSV avec les informations issues des fichiers TEI
 # Liste avec les noms des colonnes
 new_csv_header = ['index', 'id_doc', 'original_name', 'normalized_name', 'id_wkd', 'coord', 'type_place',
-                  'shortTitle', 'pubPlace', 'printer', "type_text"]
+                  'longitude', 'latitude', 'shortTitle', 'pubPlace', 'printer', "type_text", 'url']
 
 with open('../Encodage/moreno_035/nerList_v3.csv', 'w', encoding='utf-8', newline='') as newCsv:
     writer = csv.writer(newCsv)
