@@ -42,6 +42,8 @@ for file in os.listdir(xml_folder):  # On parcourt le dossier contenant les fich
                     printer = root.find('.//tei:publisher', ns).text
                     pubPlace = root.find('.//tei:pubPlace', ns).text
                     typeText = root.find('.//tei:keywords/tei:term', ns).text
+                    date = root.find('.//tei:date', ns)
+                    # print(date.text)
 
                     # On récupère la longitude et la latitude
                     new_coords = line[5].split(' ')
@@ -54,6 +56,10 @@ for file in os.listdir(xml_folder):  # On parcourt le dossier contenant les fich
                     line.append(shortTitle)
                     line.append(pubPlace)
                     line.append(printer)
+                    if re.match("185[0-9]", date.text):
+                        line.append('1850-1859')
+                    if re.search("s\.a", date.text):
+                        line.append('[s.a]')
                     line.append(typeText)
                     line.append('https://desenrollandoelcordel.unige.ch/Pliegos/' + file)
 
@@ -115,9 +121,9 @@ for file in os.listdir(xml_folder):  # On parcourt le dossier contenant les fich
 # Liste avec les noms des colonnes
 new_csv_header = ['index', 'id_doc', 'original_name', 'normalized_name', 'id_wkd', 'coord', 'type_place',
                   'longitude', 'latitude', 'shortTitle', 'pubPlace', 'printer', "type_text", 'url']
-
-with open('../Encodage/moreno_035/nerList_v3.csv', 'w', encoding='utf-8', newline='') as newCsv:
-    writer = csv.writer(newCsv)
-    writer.writerow(new_csv_header)  # On ajoute la 1ère ligne avec le nom des colonnes
-    writer.writerows(new_csvLine)  # On ajoute les nouvelles lignes
-    newCsv.close()
+print(new_csvLine)
+# with open('../Encodage/moreno_035/nerList_v3.csv', 'w', encoding='utf-8', newline='') as newCsv:
+    # writer = csv.writer(newCsv)
+    # writer.writerow(new_csv_header)  # On ajoute la 1ère ligne avec le nom des colonnes
+    # writer.writerows(new_csvLine)  # On ajoute les nouvelles lignes
+    # newCsv.close()
