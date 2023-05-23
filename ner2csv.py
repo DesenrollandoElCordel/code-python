@@ -1,14 +1,14 @@
 import os
 import pandas as pd
 
-ner_folder = "../Encodage/moreno_035"
+ner_folder = "../NER/results"
 
 ner_list_concat = []
 
 for file in os.listdir(ner_folder):
     ner_path = os.path.join(ner_folder, file)  # Chemin vers le fichier .conll
     label, ext = os.path.splitext(file)  # On sépare le nom du fichier de son extension
-    if file.endswith('.conll'):
+    if file.endswith('.txt'):
         with open(ner_path, 'r') as f:
             text = f.read()
             # print(text)
@@ -41,9 +41,9 @@ for file in os.listdir(ner_folder):
             if l.endswith("B-LOC"):
                 new_loc = l.replace(" B-LOC", "")  # On enlève 'B-LOC'
                 ner_list_concat.append([label.title(), new_loc])  # On ajoute les noms de lieux à ner_list_concat
-        ner_list_concat.sort()  # On trie les lieux par ordre alphabétique
-print(ner_list_concat)
+        # ner_list_concat.sort()  # On trie les lieux par ordre alphabétique
+# print(ner_list_concat)
 
 df = pd.DataFrame(ner_list_concat, columns=['id_doc', 'original_name'])  # On crée un DataFrame à partir de la liste
-# print(df)
-# df.to_csv("../Encodage/moreno_035/nerList_v1.csv", encoding='utf-8')  # On exporte en CSV
+# print(df.head())
+df.to_csv("nerList_Moreno.csv", encoding='utf-8')  # On exporte en CSV
