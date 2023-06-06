@@ -7,7 +7,7 @@ import os
 # Creation of a list with <term>
 def add_list_keywords(keyword):
     # Path to the XML taxonomy
-    tree = eT.parse('../Encodage/engravings-catalogue/taxonomy_grabados.xml')
+    tree = eT.parse('../Encodage/TEI_tests/taxonomy.xml')
     root = tree.getroot()
     ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
     list_keywords = etree.SubElement(keywords, "term")
@@ -35,19 +35,19 @@ def add_keywords(keyword, category, element):
 
 ns = {'tei': 'http://www.tei-c.org/ns/1.0'}  #  Namespace declaration
 
-wb = load_workbook(filename='')  # Workbook loading
-index = wb['Feuil1']  # Name of the worksheet
+wb = load_workbook(filename='../Encodage/TEI_tests/Index_Grabados_Moreno.xlsx')  # Workbook loading
+index = wb['moreno']  # Name of the worksheet
 # print(index)
 
 # We get the columns name
 list_name_columns = []
-for row in index.iter_rows(max_row=1, max_col=25, values_only=True):
+for row in index.iter_rows(max_row=1, max_col=26, values_only=True):
     list_name_columns.append(row)
-# print(list_name_columns)
+print(list_name_columns)
 
 # We put the data of the rows in a list
 title_engravings = []
-for row in index.iter_rows(min_row=2, max_row=619, max_col=26, values_only=True):
+for row in index.iter_rows(min_row=2, max_row=33, max_col=26, values_only=True):
     row_list = list(row)
     title_engravings.append(row_list)
 # print(title_engravings)
@@ -108,6 +108,8 @@ for i in range(len(title_engravings)):
 
     figure = etree.SubElement(bibl, "figure")
 
+    coords = title_engravings[i][4]
+
     graphic = etree.SubElement(figure, "graphic", url="",
                                source=title_engravings[i][2] + ".jpg",
                                n=title_engravings[i][3][1:-1])
@@ -117,10 +119,10 @@ for i in range(len(title_engravings)):
     locus1.text = title_engravings[i][4]
 
     note1 = etree.SubElement(bibl, "note", type="similar_ejemplar")
-    if title_engravings[i][25] is not None:
+    if title_engravings[i][21] is not None:
         list_sameAs = etree.SubElement(note1, "list")
-        if "," in title_engravings[i][25]:
-            sameAs_split = title_engravings[i][25].split(",")
+        if "," in title_engravings[i][21]:
+            sameAs_split = title_engravings[i][21].split(",")
             list_sameAs.set("n", str(len(sameAs_split)))
             for s in sameAs_split:
                 item = etree.SubElement(list_sameAs, "item")
@@ -131,8 +133,8 @@ for i in range(len(title_engravings)):
         else:
             list_sameAs.set("n", "1")
             item = etree.SubElement(list_sameAs, "item")
-            title_sameAs = etree.SubElement(item, "title", corresp=title_engravings[i][25] + '.xml')
-            title_sameAs.text = title_engravings[i][25]
+            title_sameAs = etree.SubElement(item, "title", corresp=title_engravings[i][21] + '.xml')
+            title_sameAs.text = title_engravings[i][21]
             locus2 = etree.SubElement(item, "locus")
             date2 = etree.SubElement(item, "date")
 
@@ -148,23 +150,20 @@ for i in range(len(title_engravings)):
     textClass = etree.SubElement(profileDesc, 'textClass')
     keywords = etree.SubElement(textClass, 'keywords')
 
-    add_keywords(title_engravings[i][8], list_name_columns[0][8], textClass)  # Category 'personaje_masculino'
-    add_keywords(title_engravings[i][9], list_name_columns[0][9], textClass)  # Category 'personaje_femenino'
-    add_keywords(title_engravings[i][10], list_name_columns[0][10], textClass)  # Category 'grupos_personajes'
-    add_keywords(title_engravings[i][11], list_name_columns[0][11], textClass)  # Category 'actitud'
+    add_keywords(title_engravings[i][7], list_name_columns[0][7], textClass)  # Category 'personaje_masculino'
+    add_keywords(title_engravings[i][8], list_name_columns[0][8], textClass)  # Category 'personaje_femenino'
+    add_keywords(title_engravings[i][9], list_name_columns[0][9], textClass)  # Category 'ninos'
+    add_keywords(title_engravings[i][10], list_name_columns[0][10], textClass)  # Category 'grupos de personajes'
+    add_keywords(title_engravings[i][11], list_name_columns[0][11], textClass)  # Category 'accion'
     add_keywords(title_engravings[i][12], list_name_columns[0][12], textClass)  # Category 'muerte'
     add_keywords(title_engravings[i][13], list_name_columns[0][13], textClass)  # Category 'religion'
-    add_keywords(title_engravings[i][14], list_name_columns[0][14], textClass)  # Category 'monstruo'
-    add_keywords(title_engravings[i][15], list_name_columns[0][15], textClass)  # Category 'animales'
-    add_keywords(title_engravings[i][16], list_name_columns[0][16], textClass)  # Category 'atuendo'
-    add_keywords(title_engravings[i][17], list_name_columns[0][17], textClass)  # Category 'instrumento_musical'
-    add_keywords(title_engravings[i][18], list_name_columns[0][18], textClass)  # Category 'arma_de_fuego'
-    add_keywords(title_engravings[i][19], list_name_columns[0][19], textClass)  # Category 'arma_blanca'
-    add_keywords(title_engravings[i][20], list_name_columns[0][20], textClass)  # Category 'accesorios_varios'
-    add_keywords(title_engravings[i][21], list_name_columns[0][21], textClass)  # Category 'espacio_construido'
-    add_keywords(title_engravings[i][22], list_name_columns[0][22], textClass)  # Category 'ambiente_natural'
-    add_keywords(title_engravings[i][23], list_name_columns[0][23], textClass)  # Category 'ambiente_maritimo'
-    add_keywords(title_engravings[i][24], list_name_columns[0][24], textClass)  # Category 'elementos_decorativos'
+    add_keywords(title_engravings[i][14], list_name_columns[0][14], textClass)  # Category 'animales'
+    add_keywords(title_engravings[i][15], list_name_columns[0][15], textClass)  # Category 'accesorios'
+    add_keywords(title_engravings[i][16], list_name_columns[0][16], textClass)  # Category 'construidos'
+    add_keywords(title_engravings[i][17], list_name_columns[0][17], textClass)  # Category 'naturales'
+    add_keywords(title_engravings[i][18], list_name_columns[0][18], textClass)  # Category 'transporte'
+    add_keywords(title_engravings[i][19], list_name_columns[0][19], textClass)  # Category 'escudo'
+    add_keywords(title_engravings[i][20], list_name_columns[0][20], textClass)  # Category 'ornamentos'
 
     revisionDesc = etree.SubElement(teiHeader, "revisionDesc")
     change = etree.SubElement(revisionDesc, "change", who="#EL", when="2021-11-22")
@@ -179,7 +178,7 @@ for i in range(len(title_engravings)):
 
     tree = etree.ElementTree(root)  # Creation of the XML tree
 
-    path_tei = '../TEI_Gravures/'  # New folder to save the files
+    path_tei = '../test_gravures'  # New folder to save the files
     if not os.path.isdir(path_tei):
         os.mkdir(path_tei)
 
@@ -191,5 +190,5 @@ for i in range(len(title_engravings)):
     if not os.path.isfile(filename_path):
         tree.write(filename_path, xml_declaration=True, encoding='UTF-8', pretty_print=True)
 
-    # print(title_engravings[i][0] + " => done")
+    print(title_engravings[i][0] + " => done")
     # print(etree.tostring(root, xml_declaration=True, encoding='UTF-8', pretty_print=True))
