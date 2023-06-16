@@ -3,6 +3,8 @@ from lxml import etree
 import xml.etree.ElementTree as eT
 import os
 
+# TO DO : Récupérer dans les anciens fichiers TEI les coordonnées et en faire une liste avec le code de la gravure
+# Si code gravure de la liste = celui de l'Excel, alors on crée une URL pour l'image + thumbnail !
 
 # Creation of a list with <term>
 def add_list_keywords(keyword):
