@@ -3,7 +3,7 @@ import xml.etree.ElementTree as eT
 import csv
 import re
 
-xml_folder = "../Encodage/TEI_tests/tei_ner"
+xml_folder = "../Encodage/Moreno-TEI-files"
 new_csvLine = []  # Liste permettant de créer un nouveau fichier csv (ajout de données issues des fichiers TEI)
 
 for file in os.listdir(xml_folder):  # On parcourt le dossier contenant les fichiers TEI
@@ -26,12 +26,14 @@ for file in os.listdir(xml_folder):  # On parcourt le dossier contenant les fich
             loc_list_normalized = []  # Liste avec les noms normalisés (avec doublon)
             loc_list_normalized_geo = []  # Liste avec tous les noms normalisés + leurs coordonnées géo (avec doublon)
             loc_list_normalized_wkd = []  # Liste avec tous les noms normalisés + leur id Wikidata (avec doublon)
+            loc_list_occurrences = []
 
             for line in csv_file:  # On parcourt chaque ligne du CSV
                 if line[1].lower() == id_doc:  # On cible les lignes qui ont le même ID qu'un fichier TEI
                     loc_list_normalized.append(line[6])  # On ajoute tous les noms normalisés à loc_list_normalized
                     loc_list_normalized_geo.append([line[6], line[5]])  # Nested list avec noms normalisés + coordonnées
                     loc_list_normalized_wkd.append([line[6], line[3]])  # Nested list avec noms normalisés + id Wikidata
+                    loc_list_occurrences.append([line[6], loc_list_normalized.count(line[6])])
                     # On ajoute les noms de lieux originaux à loc_list_deduplicated (s'ils n'y sont pas déjà)
                     if line[2] not in loc_list_deduplicated:
                         loc_list_deduplicated.append(line[2])
@@ -42,7 +44,7 @@ for file in os.listdir(xml_folder):  # On parcourt le dossier contenant les fich
                     printer = root.find('.//tei:publisher', ns).text
                     pubPlace = root.find('.//tei:pubPlace', ns).text
                     typeText = root.find('.//tei:keywords/tei:term', ns).text
-                    genre = root.find('.//tei:keywords//tei:term[4]', ns).text
+                    genre = root.find(".//tei:keywords//tei:term[@type='sagrado_profano']", ns).text
                     date = root.find('.//tei:date', ns)
                     # print(genre.text)
 
@@ -59,10 +61,16 @@ for file in os.listdir(xml_folder):  # On parcourt le dossier contenant les fich
                     line.append(shortTitle)
                     line.append(pubPlace)
                     line.append(printer)
-                    if re.match("185[0-9]", date.text):
+                    if re.match("184[0-9]", date.text):
+                        line.append('1840-1849')
+                    elif re.match("185[0-9]", date.text):
                         line.append('1850-1859')
                     elif re.match("186[0-9]", date.text):
                         line.append('1860-1869')
+                    elif re.match("187[0-9]", date.text):
+                        line.append('1870-1879')
+                    elif re.match("188[0-9]", date.text):
+                        line.append('1880-1889')
                     else:
                         line.append('[s.a]')
                     line.append(typeText)
@@ -124,13 +132,13 @@ for file in os.listdir(xml_folder):  # On parcourt le dossier contenant les fich
         # print('\n')
 
         # On modifie les fichiers TEI
-        tree.write(xml_path, encoding="UTF-8", xml_declaration=True)
-        print(file + ": DONE.")
+        # tree.write(xml_path, encoding="UTF-8", xml_declaration=True)
+        # print(file + ": DONE.")
 
 # Création d'un nouveau fichier CSV avec les informations issues des fichiers TEI
 # Liste avec les noms des colonnes
 new_csv_header = ['index', 'id_doc', 'original_name', 'id_wkd', 'type_place', 'coord', 'normalized_name',
-                  'longitude', 'latitude', 'shortTitle', 'pubPlace', 'printer', "type_text", 'genre', 'url']
+                  'longitude', 'latitude', 'shortTitle', 'pubPlace', 'printer', "date", "type_text", 'genre', 'url']
 # print(new_csvLine)
 
 with open('../Encodage/nerList_v3.csv', 'w', encoding='utf-8', newline='') as newCsv:
