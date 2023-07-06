@@ -29,7 +29,7 @@ for file in os.listdir(xml_folder):  # On parcourt le dossier contenant les fich
             loc_list_occurrences = []
 
             for line in csv_file:  # On parcourt chaque ligne du CSV
-                if line[1].lower() == id_doc:  # On cible les lignes qui ont le même ID qu'un fichier TEI
+                if line[1].lower() == id_doc.lower():  # On cible les lignes qui ont le même ID qu'un fichier TEI
                     loc_list_normalized.append(line[6])  # On ajoute tous les noms normalisés à loc_list_normalized
                     loc_list_normalized_geo.append([line[6], line[5]])  # Nested list avec noms normalisés + coordonnées
                     loc_list_normalized_wkd.append([line[6], line[3]])  # Nested list avec noms normalisés + id Wikidata

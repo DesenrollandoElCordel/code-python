@@ -5,7 +5,7 @@ places_all = []
 places_deduplicated = []
 places_count = []
 
-with open('../pliegos-ner/moreno-ner/nerList_Moreno_Wikidata.csv', encoding='utf-8') as f:
+with open('../pliegos-ner/moreno-ner/nerList_Moreno_enriched.csv', encoding='utf-8') as f:
     csv_file = csv.reader(f)  # On parcourt le fichier CSV
     next(csv_file)
 
@@ -22,6 +22,6 @@ for x in places_deduplicated:
 
 # print(places_count)
 
-df = pd.DataFrame(places_count, columns=['Lieux', 'Occurrences'])
-print(df)
-df.to_excel("Moreno_Places.xlsx")
+# df = pd.DataFrame(places_count, columns=['Lieux', 'Occurrences'])
+# print(df)
+# df.to_excel("Moreno_Places.xlsx")
