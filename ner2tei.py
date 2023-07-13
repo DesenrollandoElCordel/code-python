@@ -1,44 +1,46 @@
+# Developed by Elina Leblanc (University of Geneva)
+
 import os
 import xml.etree.ElementTree as eT
 import csv
 import re
 
 xml_folder = "../Encodage/Moreno-TEI-files"
-new_csvLine = []  # Liste permettant de créer un nouveau fichier csv (ajout de données issues des fichiers TEI)
+new_csvLine = []  # List to create a new CSV file
 
-for file in os.listdir(xml_folder):  # On parcourt le dossier contenant les fichiers TEI
+for file in os.listdir(xml_folder):
     if file.endswith('.xml'):
-        xml_path = os.path.join(xml_folder, file)  # On reconstruit le chemin vers les fichiers
+        xml_path = os.path.join(xml_folder, file)  # We create a path to the files
 
-        # Déclaration du namespace TEI
+        # TEI Namespace declaration
         ns = {'tei': 'http://www.tei-c.org/ns/1.0'}
         eT.register_namespace('', 'http://www.tei-c.org/ns/1.0')
 
-        tree = eT.parse(xml_path)  # On parse le fichier XML-TEI
-        root = tree.getroot()  # On récupére la racine du fichier TEI
-        id_doc = root.get("{http://www.w3.org/XML/1998/namespace}id")  # On récupère l'id du document
+        tree = eT.parse(xml_path)  # We parse the TEI files
+        root = tree.getroot()  # We get the root
+        id_doc = root.get("{http://www.w3.org/XML/1998/namespace}id")  # We get the ID of the document
 
         with open('../pliegos-ner/moreno-ner/nerList_Moreno_Wikidata.csv', encoding='utf-8') as f:
-            csv_file = csv.reader(f)  # On parcourt le fichier CSV
-            next(csv_file)  # On passe la première ligne
+            csv_file = csv.reader(f)  # We parse the CSV file
+            next(csv_file)  # We skip the first line
 
-            loc_list_deduplicated = []  # Liste avec les noms originaux (sans doublon)
-            loc_list_normalized = []  # Liste avec les noms normalisés (avec doublon)
-            loc_list_normalized_geo = []  # Liste avec tous les noms normalisés + leurs coordonnées géo (avec doublon)
-            loc_list_normalized_wkd = []  # Liste avec tous les noms normalisés + leur id Wikidata (avec doublon)
+            loc_list_deduplicated = []  # List with original names (no duplicate)
+            loc_list_normalized = []  # List with normalised names (with duplicates)
+            loc_list_normalized_geo = []  # List with normalised names + geographical coordinates (with duplicates)
+            loc_list_normalized_wkd = []  # List with normalised names + wikidata id (with duplicates)
             loc_list_occurrences = []
 
-            for line in csv_file:  # On parcourt chaque ligne du CSV
-                if line[1].lower() == id_doc.lower():  # On cible les lignes qui ont le même ID qu'un fichier TEI
-                    loc_list_normalized.append(line[6])  # On ajoute tous les noms normalisés à loc_list_normalized
-                    loc_list_normalized_geo.append([line[6], line[5]])  # Nested list avec noms normalisés + coordonnées
-                    loc_list_normalized_wkd.append([line[6], line[3]])  # Nested list avec noms normalisés + id Wikidata
-                    loc_list_occurrences.append([line[6], loc_list_normalized.count(line[6])])
-                    # On ajoute les noms de lieux originaux à loc_list_deduplicated (s'ils n'y sont pas déjà)
+            for line in csv_file:  # We parse the csv file
+                if line[1].lower() == id_doc.lower():  # If the line has the same id as the TEI file
+                    loc_list_normalized.append(line[6])  # List with normalised names
+                    loc_list_normalized_geo.append([line[6], line[5]])  # Nested list with normalised names + coordinates
+                    loc_list_normalized_wkd.append([line[6], line[3]])  # Nested list with normalised names + id Wkd
+
+                    # We create a deduplicate list with the normalised names
                     if line[2] not in loc_list_deduplicated:
                         loc_list_deduplicated.append(line[2])
 
-                    # On récupère dans chaque fichier TEI des informations sur les documents
+                    # We get information in the TEI files
                     shortTitle = root.find('.//tei:titleStmt/tei:title', ns).text
                     shortTitle = re.sub(r"\n( +)", " ", shortTitle)
                     printer = root.find('.//tei:publisher', ns).text
@@ -48,14 +50,14 @@ for file in os.listdir(xml_folder):  # On parcourt le dossier contenant les fich
                     date = root.find('.//tei:date', ns)
                     # print(genre.text)
 
-                    # On récupère la longitude et la latitude
+                    # We get the longitude and latitude
                     if line[5] != '':
                         new_coords = line[5].split(',')
                         # print(new_coords[0])
                         long = new_coords[0]
                         lat = new_coords[1]
 
-                    # On ajoute ces informations à la fin de chaque ligne
+                    # We add the TEI information at the end of each line
                     line.append(long)
                     line.append(lat)
                     line.append(shortTitle)
@@ -77,24 +79,23 @@ for file in os.listdir(xml_folder):  # On parcourt le dossier contenant les fich
                     line.append(genre)
                     line.append('https://desenrollandoelcordel.unige.ch/Pliegos/' + file)
 
-                    # On ajoute la nouvelle ligne à la new_csvLine
                     new_csvLine.append(line)
                     # print(line)
 
-            # On retire les doublons de la nested list loc_list_normalized_geo
+            # Deduplicated list for geographical coordinates
             total_geo = {}
             for k, v in loc_list_normalized_geo:
                 total_geo[k] = str(total_geo.get(k, v))
             loc_list_geo_deduplicated = [list(t) for t in total_geo.items()]
 
-            # On retire les doublons de la nested list loc_list_normalized_wkd
+            # Deduplicated list for WKD id
             total_wkd = {}
             for p, w in loc_list_normalized_wkd:
                 total_wkd[p] = str(total_wkd.get(p, w))
             loc_list_wkd_deduplicated = [list(e) for e in total_wkd.items()]
             # print(loc_list_wkd)
 
-            # Boucle pour ajouter les noms de lieu dans le texte
+            # We add a <name> element inside the body of the TEI file
             for l in root.findall(".//tei:l", ns):
                 if l.text is not None:
                     # print(id_doc, l.text, '->', type(l))
@@ -104,45 +105,46 @@ for file in os.listdir(xml_folder):  # On parcourt le dossier contenant les fich
                             new_line = l.text.replace(loc_list_deduplicated[i], '<name>' + loc_list_deduplicated[i] + '</name>')
                             l.text = new_line
 
-            sourceDesc = root.find('.//tei:sourceDesc', ns)  # On récupère l'élément <sourceDesc>
-            listPlace = eT.SubElement(sourceDesc, 'listPlace')  # On ajoute à <sourceDesc> l'élément <listPlace>
-            listPlace.set("{http://www.w3.org/XML/1998/namespace}base", "https://www.wikidata.org/wiki/")  # On ajoute un attribut @xml:base avec l'URL de base de Wikidata
+            # We create a list of place in the <teiHeader>
+            sourceDesc = root.find('.//tei:sourceDesc', ns)
+            listPlace = eT.SubElement(sourceDesc, 'listPlace')  # We add <listPlace> in <sourceDesc>
+            # We add an @xml:base attribute with URL of Wikidata
+            listPlace.set("{http://www.w3.org/XML/1998/namespace}base", "https://www.wikidata.org/wiki/")
 
-            # Boucle pour ajouter les noms de lieu dans le <teiHeader>
             for place in loc_list_geo_deduplicated:
                 if place[0] != "":
-                    placeElement = eT.SubElement(listPlace, "place")  # On ajoute l'élément <place>
-                    placeNb = loc_list_normalized.count(place[0])  # On compte le nb de fois où le nom de lieu apparaît dans le texte
-                    placeElement.set("n", str(placeNb))  # On ajoute à <placeName> un @n avec le nb d'occurrences du lieu
-                    placeElement.set("key", place[0].replace(" ", "_"))
+                    placeElement = eT.SubElement(listPlace, "place")  # We add <place> in <listPlace>
+                    placeNb = loc_list_normalized.count(place[0])  # We count the number of time a name appears in the text
+                    placeElement.set("n", str(placeNb))  # @n with the numbre of occurrences
+                    placeElement.set("key", place[0].replace(" ", "_"))  # @key with the name of the place
 
                     for i in range(len(loc_list_wkd_deduplicated)):
                         if loc_list_wkd_deduplicated[i][0] == place[0]:
-                            placeElement.set("corresp", loc_list_wkd_deduplicated[i][1])  # On ajoute @corresp à <place> avec l'id wkd
+                            placeElement.set("corresp", loc_list_wkd_deduplicated[i][1])  # @corresp with id Wkd
 
-                    placeName = eT.SubElement(placeElement, "placeName")  # On ajoute l'élément <placeName>
-                    placeName.text = place[0].title()  # On ajoute à <placeName> les noms de lieux en rétablissant les majuscules
+                    placeName = eT.SubElement(placeElement, "placeName")  # We add the element <placeName>
+                    placeName.text = place[0].title()  # We add the name of place
 
-                    location = eT.SubElement(placeElement, "location")  # On ajoute l'élément <location>
-                    geo = eT.SubElement(location, "geo")  # On ajoute l'élément <geo>
-                    geo.text = place[1].replace(",", " ")  # On ajoute les coordonnées géographiques
+                    location = eT.SubElement(placeElement, "location")  # We add a <location> element
+                    geo = eT.SubElement(location, "geo")  # We add a <geo> element
+                    geo.text = place[1].replace(",", " ")  # We add the geographical coordinates
 
-        # Permet d'afficher tout ou partie d'un arbre xml dans la console
+        # Print the XML tree in the console
         # eT.dump(listPlace)
         # print('\n')
 
-        # On modifie les fichiers TEI
+        # We modify the TEI files
         # tree.write(xml_path, encoding="UTF-8", xml_declaration=True)
         # print(file + ": DONE.")
 
-# Création d'un nouveau fichier CSV avec les informations issues des fichiers TEI
-# Liste avec les noms des colonnes
+# Creation of a new CSV file with the TEI information
+# List with the name of the columns
 new_csv_header = ['index', 'id_doc', 'original_name', 'id_wkd', 'type_place', 'coord', 'normalized_name',
                   'longitude', 'latitude', 'shortTitle', 'pubPlace', 'printer', "date", "type_text", 'genre', 'url']
 # print(new_csvLine)
 
 with open('../Encodage/nerList_v3.csv', 'w', encoding='utf-8', newline='') as newCsv:
     writer = csv.writer(newCsv)
-    writer.writerow(new_csv_header)  # On ajoute la 1ère ligne avec le nom des colonnes
-    writer.writerows(new_csvLine)  # On ajoute les nouvelles lignes
+    writer.writerow(new_csv_header)  # 1st line with the name of columns
+    writer.writerows(new_csvLine)  # We add the new lines
     newCsv.close()

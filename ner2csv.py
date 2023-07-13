@@ -1,4 +1,4 @@
-# Developed by Dr. Kalitvianski Ruslan and Leblanc Elina
+# Developed by Drs. Kalitvianski Ruslan and Leblanc Elina
 
 import os
 import pandas as pd
@@ -28,10 +28,13 @@ for file in os.listdir(ner_folder):
             elif line.endswith('B-LOC'):  # If a line ends by B-LOC
                 if len(en) > 0:  # Case 1: If en is not empty, we add en to ner_list
                     ner_list.append([label, en+""])
+                    en = line.split(" ")[0]
                 else:  # Case 2: If en is empty, we split the line to get only the entity name
                     en = line.split(" ")[0]
-            else:  # If a line ends by I-LOC
+            elif line.endswith('I-LOC'):  # If a line ends by I-LOC
                 en += " "+line.split(" ")[0]  # Only case, we concat the entity name with en
+        if len(en) > 0:
+            ner_list.append([label, en + ""])
 print(ner_list)
 
 # We create a dataframe
@@ -39,4 +42,4 @@ df = pd.DataFrame(ner_list, columns=['id_doc', 'original_name'])
 # print(df)
 
 # We export the dataframe in CSV
-df.to_csv("nerList_Moreno.csv", encoding='utf-8')
+# df.to_csv("nerList_Moreno.csv", encoding='utf-8')
