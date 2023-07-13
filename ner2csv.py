@@ -1,49 +1,42 @@
+# Developed by Dr. Kalitvianski Ruslan and Leblanc Elina
+
 import os
 import pandas as pd
 
-ner_folder = "../NER/results"
-
-ner_list_concat = []
+ner_folder = "../pliegos-ner/moreno-ner/moreno-IOB"
+ner_list = []
 
 for file in os.listdir(ner_folder):
-    ner_path = os.path.join(ner_folder, file)  # Chemin vers le fichier .conll
-    label, ext = os.path.splitext(file)  # On sépare le nom du fichier de son extension
+    ner_path = os.path.join(ner_folder, file)  # We create the path to read the files
+    label, ext = os.path.splitext(file)  # We split the name and the extension of the files
     if file.endswith('.txt'):
+        # We open the txt files
         with open(ner_path, 'r') as f:
             text = f.read()
             # print(text)
 
-        ner_list = []
-        lines = text.split('\n')  # On découpe le texte ligne par ligne
+        lines = text.split('\n')  # We get the lines
+        en = ""  # We initiate an empty variable for the named entities
 
-        # Pour chaque ligne, si elle finit par 'LOC', on l'ajoute à ner_list
         for line in lines:
-            if line.endswith('LOC'):
-                ner_list.append(line)
-        # print(ner_list)
+            if line.endswith('O'):  # If a line ends by O (no entities)
+                if len(en) > 0:  # Case 1: If en is not empty, we add en to ner_list and empty en
+                    ner_list.append([label, en + ""])
+                    en = ""
+                else:  # Case 2: if en is empty, we move to the next line
+                    pass
+            elif line.endswith('B-LOC'):  # If a line ends by B-LOC
+                if len(en) > 0:  # Case 1: If en is not empty, we add en to ner_list
+                    ner_list.append([label, en+""])
+                else:  # Case 2: If en is empty, we split the line to get only the entity name
+                    en = line.split(" ")[0]
+            else:  # If a line ends by I-LOC
+                en += " "+line.split(" ")[0]  # Only case, we concat the entity name with en
+print(ner_list)
 
-        # Boucle spéciale pour les noms de lieux avec plusieurs tokens (B-LOC + I-LOC)
-        # On récupére l'index (i) et chaque élément (e) de ner_list
-        for i, e in enumerate(ner_list):
-            # print(i, '->', e)
-            # On cible uniquement les éléments qui finissent par 'I-LOC' et dont l'élément précédent 'B-LOC'
-            if e.endswith('I-LOC') and ner_list[i-1].endswith('B-LOC'):
-                new_ILOC = e.replace(" I-LOC", "")  # On enlève 'I-LOC'
-                new_BLOC = ner_list[i-1].replace(" B-LOC", "")  # On enlève 'B-LOC'
-                ner_list_concat.append([label.title(), new_BLOC + " " + new_ILOC])  # On concatène les tokens pour reformer le nom de lieu
-                ner_list.remove(e)  # On enlève l'élément avec 'I-LOC' de ner_list
-                ner_list.pop(i-1)  # On enlève l'élément avec 'B-LOC' de ner_list
-                # print(ner_list[i-1] + " " + e)
-        # print(ner_list)
+# We create a dataframe
+df = pd.DataFrame(ner_list, columns=['id_doc', 'original_name'])
+# print(df)
 
-        # Boucle pour les autres noms de lieux
-        for l in ner_list:
-            if l.endswith("B-LOC"):
-                new_loc = l.replace(" B-LOC", "")  # On enlève 'B-LOC'
-                ner_list_concat.append([label.title(), new_loc])  # On ajoute les noms de lieux à ner_list_concat
-        # ner_list_concat.sort()  # On trie les lieux par ordre alphabétique
-# print(ner_list_concat)
-
-df = pd.DataFrame(ner_list_concat, columns=['id_doc', 'original_name'])  # On crée un DataFrame à partir de la liste
-# print(df.head())
-df.to_csv("nerList_Moreno.csv", encoding='utf-8')  # On exporte en CSV
+# We export the dataframe in CSV
+df.to_csv("nerList_Moreno.csv", encoding='utf-8')
