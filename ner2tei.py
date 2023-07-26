@@ -5,7 +5,7 @@ import xml.etree.ElementTree as eT
 import csv
 import re
 
-xml_folder = "../Encodage/Moreno-TEI-files"
+xml_folder = "../Encodage/TEI_tests/tei_ner"
 new_csvLine = []  # List to create a new CSV file
 
 for file in os.listdir(xml_folder):
@@ -116,7 +116,6 @@ for file in os.listdir(xml_folder):
                     placeElement = eT.SubElement(listPlace, "place")  # We add <place> in <listPlace>
                     placeNb = loc_list_normalized.count(place[0])  # We count the number of time a name appears in the text
                     placeElement.set("n", str(placeNb))  # @n with the numbre of occurrences
-                    placeElement.set("key", place[0].replace(" ", "_"))  # @key with the name of the place
 
                     for i in range(len(loc_list_wkd_deduplicated)):
                         if loc_list_wkd_deduplicated[i][0] == place[0]:
@@ -124,6 +123,7 @@ for file in os.listdir(xml_folder):
 
                     placeName = eT.SubElement(placeElement, "placeName")  # We add the element <placeName>
                     placeName.text = place[0].title()  # We add the name of place
+                    placeName.set("key", place[0].replace(" ", "_"))  # @key with the name of the place
 
                     location = eT.SubElement(placeElement, "location")  # We add a <location> element
                     geo = eT.SubElement(location, "geo")  # We add a <geo> element
@@ -134,8 +134,8 @@ for file in os.listdir(xml_folder):
         # print('\n')
 
         # We modify the TEI files
-        # tree.write(xml_path, encoding="UTF-8", xml_declaration=True)
-        # print(file + ": DONE.")
+        tree.write(xml_path, encoding="UTF-8", xml_declaration=True)
+        print(file + ": DONE.")
 
 # Creation of a new CSV file with the TEI information
 # List with the name of the columns
@@ -143,8 +143,8 @@ new_csv_header = ['index', 'id_doc', 'original_name', 'id_wkd', 'type_place', 'c
                   'longitude', 'latitude', 'shortTitle', 'pubPlace', 'printer', "date", "type_text", 'genre', 'url']
 # print(new_csvLine)
 
-with open('../Encodage/nerList_v3.csv', 'w', encoding='utf-8', newline='') as newCsv:
+'''with open('../Encodage/nerList_v3.csv', 'w', encoding='utf-8', newline='') as newCsv:
     writer = csv.writer(newCsv)
     writer.writerow(new_csv_header)  # 1st line with the name of columns
     writer.writerows(new_csvLine)  # We add the new lines
-    newCsv.close()
+    newCsv.close()'''

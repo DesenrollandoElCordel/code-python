@@ -3,9 +3,6 @@ from lxml import etree
 import xml.etree.ElementTree as eT
 import os
 
-# TO DO : Récupérer dans les anciens fichiers TEI les coordonnées et en faire une liste avec le code de la gravure
-# Si code gravure de la liste = celui de l'Excel, alors on crée une URL pour l'image + thumbnail !
-
 # Creation of a list with <term>
 def add_list_keywords(keyword):
     # Path to the XML taxonomy
@@ -37,7 +34,7 @@ def add_keywords(keyword, category, element):
 
 ns = {'tei': 'http://www.tei-c.org/ns/1.0'}  #  Namespace declaration
 
-wb = load_workbook(filename='../Encodage/TEI_tests/Index_Grabados_Moreno.xlsx')  # Workbook loading
+wb = load_workbook(filename='../Encodage/TEI_tests/Index_Grabados_Moreno_v2.xlsx')  # Workbook loading
 index = wb['moreno']  # Name of the worksheet
 # print(index)
 
@@ -49,7 +46,7 @@ print(list_name_columns)
 
 # We put the data of the rows in a list
 title_engravings = []
-for row in index.iter_rows(min_row=2, max_row=33, max_col=26, values_only=True):
+for row in index.iter_rows(min_row=2, max_row=616, max_col=26, values_only=True):
     row_list = list(row)
     title_engravings.append(row_list)
 # print(title_engravings)
