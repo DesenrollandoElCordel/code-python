@@ -16,9 +16,9 @@ This folder contains the different Python scripts we have used during the projec
 - [webScrapping](webScrapping.py): This code automatically extracts information from the metadata of a digital library (in our case, title of documents and IIIF links).
 
 ## NER processings
-- [NerToWkd](NerTowkd.py): This code can be used to launch several SPARQL queries on the Wikidata endpoint from a list of names.
+- [NerToWkd](NerToWkd.py): This code can be used to launch several SPARQL queries on the Wikidata endpoint from a list of names.
 - [csv2json](csv2json.py): This code generates a JSON file in [Linked Places](https://github.com/LinkedPasts/linked-places-format) format from a CSV file. The resulting JSON file is used to display places on a map created with the Peripleo application.
 - [ner2csv](ner2csv.py): This code transforms an IOB (Inside-Outside-Beginning) format file into a CSV file. It recovers only the named entities and reconstructs the entities in several parts (e.g. "Santa B-LOC Ana I-LOC" becomes "Santa Ana" in the CSV).
-- [ner2tei](ner2tei.py): This code enriches a CSV file with new information extracted from TEI XML files ([example](../pliegos-ner/moreno-ner/nerList_Moreno_enriched.csv)). It also inserts geographic information contained in the CSV into these TEI files: in the body of the text with `<name>` elements and in the `<teiHeader>` with a `<listPlace>` element ([example](../Moreno-TEI-files/tei-files-v2/Moreno_001.xml)).
+- [ner2tei](ner2tei.py): This code enriches a CSV file with new information extracted from TEI XML files ([example](https://github.com/DesenrollandoElCordel/pliegos-ner/blob/main/moreno-ner/nerList_Moreno_enriched.csv)). It also inserts geographic information contained in the CSV into these TEI files: in the body of the text with `<name>` elements and in the `<teiHeader>` with a `<listPlace>` element ([example](https://github.com/DesenrollandoElCordel/Moreno-TEI-files/blob/main/tei-files-v2/Moreno_001.xml)).
 - [ner2tei_index](ner2tei_index.py): This code creates a TEI index of place names from a CSV file.
 - [ner_count](ner_count.py): This code counts the number of occurrences of a word in a list and outputs the results in a spreadsheet.
