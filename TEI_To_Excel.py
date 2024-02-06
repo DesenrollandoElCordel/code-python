@@ -10,7 +10,7 @@ parser.add_argument('--tei', type=str, help="Path to the XML-TEI folder.")
 args = parser.parse_args()
 
 # Loading of the Excel file
-wb = load_workbook(filename='../Index_Grabados_Varios.xlsx')
+wb = load_workbook(filename='../varios_woodcuts.xlsx')
 
 # Selection of the worksheet
 ws1 = wb["metadata"]
@@ -33,7 +33,7 @@ for f in os.listdir(args.tei):
         date = root.find(".//tei:sourceDesc//tei:publicationStmt/tei:date", ns).text  # Date
 
         # Iteration through the rows and the second columns (with document name)
-        for row in ws1.iter_rows(min_row=2, max_row=127, min_col=2, max_col=2):
+        for row in ws1.iter_rows(min_row=2, max_row=131, min_col=2, max_col=2):
             for cell in row:
                 number_row = re.split("B", str(cell))  # We split the name of the cell to only get its number
                 c = cell.value  # We get the value of each cell
@@ -44,12 +44,12 @@ for f in os.listdir(args.tei):
                     name_cell_columnE = "E" + number_row[1][:-1]  # Concatenation of the name of the column and the number of the row
                     ws1[name_cell_columnE] = title  # We put in the cell the title of the document
 
-                    name_cell_columnF = "F" + number_row[1][:-1]
+                    name_cell_columnF = "G" + number_row[1][:-1]
                     ws1[name_cell_columnF] = date
 
-                    name_cell_columnG = "G" + number_row[1][:-1]
+                    name_cell_columnG = "H" + number_row[1][:-1]
                     ws1[name_cell_columnG] = printer
                 else:
                     pass
 
-wb.save(filename='../Index_Grabados_Varios_Update.xlsx')
+wb.save(filename='../varios_woodcuts_update.xlsx')
