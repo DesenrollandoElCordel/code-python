@@ -34,19 +34,19 @@ def add_keywords(keyword, category, element):
 
 ns = {'tei': 'http://www.tei-c.org/ns/1.0'}  #  Namespace declaration
 
-wb = load_workbook(filename='../Encodage/TEI_tests/Index_Grabados_Moreno_v2.xlsx')  # Workbook loading
-index = wb['moreno']  # Name of the worksheet
+wb = load_workbook(filename='../varios_woodcuts_update.xlsx')  # Workbook loading
+index = wb['metadata']  # Name of the worksheet
 # print(index)
 
 # We get the columns name
 list_name_columns = []
-for row in index.iter_rows(max_row=1, max_col=26, values_only=True):
+for row in index.iter_rows(max_row=1, max_col=24, values_only=True):
     list_name_columns.append(row)
 print(list_name_columns)
 
 # We put the data of the rows in a list
 title_engravings = []
-for row in index.iter_rows(min_row=2, max_row=616, max_col=26, values_only=True):
+for row in index.iter_rows(min_row=2, max_row=954, max_col=24, values_only=True):
     row_list = list(row)
     title_engravings.append(row_list)
 # print(title_engravings)
@@ -82,21 +82,22 @@ for i in range(len(title_engravings)):
     title_bibl = etree.SubElement(bibl, "title")
     title_bibl.text = title_engravings[i][0]
     author = etree.SubElement(bibl, "author")
+    author.text = title_engravings[i][5]
 
     publisher = etree.SubElement(bibl, "publisher")
-    publisher.text = title_engravings[i][6]
+    publisher.text = title_engravings[i][7]
 
-    pubPlace = etree.SubElement(bibl, "pubPlace", ref="https://www.geonames.org/2520118/carmona.html")
-    pubPlace.text = "Carmona"
+    pubPlace = etree.SubElement(bibl, "pubPlace", ref="xxxx")
+    pubPlace.text = title_engravings[i][8]
 
     date = etree.SubElement(bibl, "date")
-    date_text = str(title_engravings[i][5])
+    date_text = str(title_engravings[i][6])
     date.text = date_text
-    if title_engravings[i][5] == "[s.a.]":
+    if title_engravings[i][6] == "[s.a.]":
         date.set("when", "1800")
         date.set("cert", "low")
     elif "[?]" in date_text:
-        date_medium = title_engravings[i][5][:4]
+        date_medium = title_engravings[i][6][:4]
         date.set("when", date_medium)
         date.set("cert", "medium")
     else:
@@ -107,21 +108,21 @@ for i in range(len(title_engravings)):
 
     figure = etree.SubElement(bibl, "figure")
 
-    coords = title_engravings[i][4]
+    coords = title_engravings[i][3]
 
-    graphic = etree.SubElement(figure, "graphic", url="",
+    graphic = etree.SubElement(figure, "graphic", url="varios/" + title_engravings[i][2] + ".jpg/" + title_engravings[i][3] + "/full/0/default.jpg",
                                source=title_engravings[i][2] + ".jpg",
-                               n=title_engravings[i][3][1:-1])
+                               n=title_engravings[i][3])
 
     figDesc = etree.SubElement(figure, "figDesc")
     locus1 = etree.SubElement(figDesc, "locus", target=title_engravings[i][1]+".xml")
     locus1.text = title_engravings[i][4]
 
     note1 = etree.SubElement(bibl, "note", type="similar_ejemplar")
-    if title_engravings[i][21] is not None:
+    if title_engravings[i][23] is not None:
         list_sameAs = etree.SubElement(note1, "list")
-        if "," in title_engravings[i][21]:
-            sameAs_split = title_engravings[i][21].split(",")
+        if "," in title_engravings[i][23]:
+            sameAs_split = title_engravings[i][23].split(",")
             list_sameAs.set("n", str(len(sameAs_split)))
             for s in sameAs_split:
                 item = etree.SubElement(list_sameAs, "item")
@@ -132,8 +133,8 @@ for i in range(len(title_engravings)):
         else:
             list_sameAs.set("n", "1")
             item = etree.SubElement(list_sameAs, "item")
-            title_sameAs = etree.SubElement(item, "title", corresp=title_engravings[i][21] + '.xml')
-            title_sameAs.text = title_engravings[i][21]
+            title_sameAs = etree.SubElement(item, "title", corresp=title_engravings[i][23] + '.xml')
+            title_sameAs.text = title_engravings[i][23]
             locus2 = etree.SubElement(item, "locus")
             date2 = etree.SubElement(item, "date")
 
@@ -149,27 +150,27 @@ for i in range(len(title_engravings)):
     textClass = etree.SubElement(profileDesc, 'textClass')
     keywords = etree.SubElement(textClass, 'keywords')
 
-    add_keywords(title_engravings[i][7], list_name_columns[0][7], textClass)  # Category 'personaje_masculino'
-    add_keywords(title_engravings[i][8], list_name_columns[0][8], textClass)  # Category 'personaje_femenino'
-    add_keywords(title_engravings[i][9], list_name_columns[0][9], textClass)  # Category 'ninos'
-    add_keywords(title_engravings[i][10], list_name_columns[0][10], textClass)  # Category 'grupos de personajes'
-    add_keywords(title_engravings[i][11], list_name_columns[0][11], textClass)  # Category 'accion'
-    add_keywords(title_engravings[i][12], list_name_columns[0][12], textClass)  # Category 'muerte'
-    add_keywords(title_engravings[i][13], list_name_columns[0][13], textClass)  # Category 'religion'
-    add_keywords(title_engravings[i][14], list_name_columns[0][14], textClass)  # Category 'animales'
-    add_keywords(title_engravings[i][15], list_name_columns[0][15], textClass)  # Category 'accesorios'
-    add_keywords(title_engravings[i][16], list_name_columns[0][16], textClass)  # Category 'construidos'
-    add_keywords(title_engravings[i][17], list_name_columns[0][17], textClass)  # Category 'naturales'
-    add_keywords(title_engravings[i][18], list_name_columns[0][18], textClass)  # Category 'transporte'
-    add_keywords(title_engravings[i][19], list_name_columns[0][19], textClass)  # Category 'escudo'
-    add_keywords(title_engravings[i][20], list_name_columns[0][20], textClass)  # Category 'ornamentos'
+    add_keywords(title_engravings[i][9], list_name_columns[0][9], textClass)  # Category 'personaje_masculino'
+    add_keywords(title_engravings[i][10], list_name_columns[0][10], textClass)  # Category 'personaje_femenino'
+    add_keywords(title_engravings[i][11], list_name_columns[0][11], textClass)  # Category 'ninos'
+    add_keywords(title_engravings[i][12], list_name_columns[0][12], textClass)  # Category 'grupos de personajes'
+    add_keywords(title_engravings[i][13], list_name_columns[0][13], textClass)  # Category 'accion'
+    add_keywords(title_engravings[i][14], list_name_columns[0][14], textClass)  # Category 'muerte'
+    add_keywords(title_engravings[i][15], list_name_columns[0][15], textClass)  # Category 'religion'
+    add_keywords(title_engravings[i][16], list_name_columns[0][16], textClass)  # Category 'animales'
+    add_keywords(title_engravings[i][17], list_name_columns[0][17], textClass)  # Category 'accesorios'
+    add_keywords(title_engravings[i][18], list_name_columns[0][18], textClass)  # Category 'construidos'
+    add_keywords(title_engravings[i][19], list_name_columns[0][19], textClass)  # Category 'naturales'
+    add_keywords(title_engravings[i][20], list_name_columns[0][20], textClass)  # Category 'transporte'
+    add_keywords(title_engravings[i][21], list_name_columns[0][21], textClass)  # Category 'escudo'
+    add_keywords(title_engravings[i][22], list_name_columns[0][22], textClass)  # Category 'ornamentos'
 
     revisionDesc = etree.SubElement(teiHeader, "revisionDesc")
     change = etree.SubElement(revisionDesc, "change", who="#EL", when="2021-11-22")
     change.text = "Creación del documento"
 
     facsimile = etree.SubElement(root, "facsimile")
-    thumbnail = etree.SubElement(facsimile, "graphic", url=title_engravings[i][0] + "_thumbnail.jpg")
+    thumbnail = etree.SubElement(facsimile, "graphic", url="varios/" + title_engravings[i][2] + ".jpg/" + title_engravings[i][3] + "/200,/0/default.jpg")
 
     text = etree.SubElement(root, "text")
     body = etree.SubElement(text, "body")

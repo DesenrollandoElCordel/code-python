@@ -31,9 +31,10 @@ for f in os.listdir(args.tei):
         printer = root.find(".//tei:publisher", ns).text  # Name of the printer
         title = root.find(".//tei:fileDesc/tei:titleStmt/tei:title", ns).text.capitalize()  # Title
         date = root.find(".//tei:sourceDesc//tei:publicationStmt/tei:date", ns).text  # Date
+        place = root.find(".//tei:sourceDesc//tei:pubPlace", ns).text  # Place of publication
 
         # Iteration through the rows and the second columns (with document name)
-        for row in ws1.iter_rows(min_row=2, max_row=131, min_col=2, max_col=2):
+        for row in ws1.iter_rows(min_row=2, max_row=954, min_col=2, max_col=2):
             for cell in row:
                 number_row = re.split("B", str(cell))  # We split the name of the cell to only get its number
                 c = cell.value  # We get the value of each cell
@@ -44,11 +45,15 @@ for f in os.listdir(args.tei):
                     name_cell_columnE = "E" + number_row[1][:-1]  # Concatenation of the name of the column and the number of the row
                     ws1[name_cell_columnE] = title  # We put in the cell the title of the document
 
-                    name_cell_columnF = "G" + number_row[1][:-1]
-                    ws1[name_cell_columnF] = date
+                    name_cell_columnG = "G" + number_row[1][:-1]
+                    ws1[name_cell_columnG] = date
 
-                    name_cell_columnG = "H" + number_row[1][:-1]
-                    ws1[name_cell_columnG] = printer
+                    name_cell_columnH = "H" + number_row[1][:-1]
+                    ws1[name_cell_columnH] = printer
+
+                    name_cell_columnI = "I" + number_row[1][:-1]
+                    ws1[name_cell_columnI] = place
+
                 else:
                     pass
 
