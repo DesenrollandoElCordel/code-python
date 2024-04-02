@@ -46,7 +46,7 @@ print(list_name_columns)
 
 # We put the data of the rows in a list
 title_engravings = []
-for row in index.iter_rows(min_row=2, max_row=954, max_col=24, values_only=True):
+for row in index.iter_rows(min_row=131, max_row=954, max_col=24, values_only=True):
     row_list = list(row)
     title_engravings.append(row_list)
 # print(title_engravings)
@@ -108,11 +108,15 @@ for i in range(len(title_engravings)):
 
     figure = etree.SubElement(bibl, "figure")
 
-    coords = title_engravings[i][3]
+    coords = title_engravings[i][3].split(',')
+    width = int(coords[2]) - int(coords[0])
+    height = int(coords[3]) - int(coords[1])
+    new_coords = coords[0] + "," + coords[1] + "," + str(width) + "," + str(height)
+    # print(new_coords)
 
-    graphic = etree.SubElement(figure, "graphic", url="varios/" + title_engravings[i][2] + ".jpg/" + title_engravings[i][3] + "/full/0/default.jpg",
+    graphic = etree.SubElement(figure, "graphic", url="varios/" + title_engravings[i][2] + ".jpg/" + new_coords + "/full/0/default.jpg",
                                source=title_engravings[i][2] + ".jpg",
-                               n=title_engravings[i][3])
+                               n=new_coords)
 
     figDesc = etree.SubElement(figure, "figDesc")
     locus1 = etree.SubElement(figDesc, "locus", target=title_engravings[i][1]+".xml")
@@ -128,15 +132,19 @@ for i in range(len(title_engravings)):
                 item = etree.SubElement(list_sameAs, "item")
                 title_sameAs = etree.SubElement(item, "title", corresp=s + ".xml")
                 title_sameAs.text = s
-                locus2 = etree.SubElement(item, "locus")
-                date2 = etree.SubElement(item, "date")
+                bibl2 = etree.SubElement(item, "bibl")
+                title2 = etree.SubElement(bibl2, "title")
+                date2 = etree.SubElement(bibl2, "date")
+                publisher2 = etree.SubElement(bibl2, "publisher")
         else:
             list_sameAs.set("n", "1")
             item = etree.SubElement(list_sameAs, "item")
             title_sameAs = etree.SubElement(item, "title", corresp=title_engravings[i][23] + '.xml')
             title_sameAs.text = title_engravings[i][23]
-            locus2 = etree.SubElement(item, "locus")
-            date2 = etree.SubElement(item, "date")
+            bibl2 = etree.SubElement(item, "bibl")
+            title2 = etree.SubElement(bibl2, "title")
+            date2 = etree.SubElement(bibl2, "date")
+            publisher2 = etree.SubElement(bibl2, "publisher")
 
     note2 = etree.SubElement(bibl, "note", type="origen")
     note2.text = "Grabado extraído del pliego " + title_engravings[i][1]
@@ -170,7 +178,7 @@ for i in range(len(title_engravings)):
     change.text = "Creación del documento"
 
     facsimile = etree.SubElement(root, "facsimile")
-    thumbnail = etree.SubElement(facsimile, "graphic", url="varios/" + title_engravings[i][2] + ".jpg/" + title_engravings[i][3] + "/200,/0/default.jpg")
+    thumbnail = etree.SubElement(facsimile, "graphic", url="varios/" + title_engravings[i][2] + ".jpg/" + new_coords + "/200,/0/default.jpg")
 
     text = etree.SubElement(root, "text")
     body = etree.SubElement(text, "body")
