@@ -20,7 +20,7 @@ for file in os.listdir(xml_folder):
         root = tree.getroot()  # We get the root
         id_doc = root.get("{http://www.w3.org/XML/1998/namespace}id")  # We get the ID of the document
 
-        with open('../pliegos-ner/moreno-ner/nerList_Moreno_Wikidata.csv', encoding='utf-8') as f:
+        with open('../NER_Varios_enriched.csv', encoding='utf-8') as f:
             csv_file = csv.reader(f)  # We parse the CSV file
             next(csv_file)  # We skip the first line
 
@@ -32,15 +32,17 @@ for file in os.listdir(xml_folder):
 
             for line in csv_file:  # We parse the csv file
                 if line[1].lower() == id_doc.lower():  # If the line has the same id as the TEI file
-                    loc_list_normalized.append(line[6])  # List with normalised names
-                    loc_list_normalized_geo.append([line[6], line[5]])  # Nested list with normalised names + coordinates
-                    loc_list_normalized_wkd.append([line[6], line[3]])  # Nested list with normalised names + id Wkd
+                    concat_coords = str(line[6]) + ',' + str(line[7])
+                    loc_list_normalized.append(line[5])  # List with normalised names
+                    loc_list_normalized_geo.append([line[5], concat_coords])  # Nested list with normalised names + coordinates
+                    loc_list_normalized_wkd.append([line[5], line[3]])  # Nested list with normalised names + id Wkd
 
                     # We create a deduplicate list with the normalised names
                     if line[2] not in loc_list_deduplicated:
                         loc_list_deduplicated.append(line[2])
+                    # print(loc_list_deduplicated)
 
-                    # We get information in the TEI files
+                    '''# We get information in the TEI files
                     shortTitle = root.find('.//tei:titleStmt/tei:title', ns).text
                     shortTitle = re.sub(r"\n( +)", " ", shortTitle)
                     printer = root.find('.//tei:publisher', ns).text
@@ -80,30 +82,70 @@ for file in os.listdir(xml_folder):
                     line.append('https://desenrollandoelcordel.unige.ch/Pliegos/' + file)
 
                     new_csvLine.append(line)
-                    # print(line)
+                    # print(line)'''
 
             # Deduplicated list for geographical coordinates
             total_geo = {}
             for k, v in loc_list_normalized_geo:
                 total_geo[k] = str(total_geo.get(k, v))
             loc_list_geo_deduplicated = [list(t) for t in total_geo.items()]
+            # print(loc_list_geo_deduplicated)
 
             # Deduplicated list for WKD id
             total_wkd = {}
             for p, w in loc_list_normalized_wkd:
                 total_wkd[p] = str(total_wkd.get(p, w))
             loc_list_wkd_deduplicated = [list(e) for e in total_wkd.items()]
-            # print(loc_list_wkd)
+            # print(loc_list_wkd_deduplicated)
 
             # We add a <name> element inside the body of the TEI file
-            for l in root.findall(".//tei:l", ns):
+            for parag in root.findall(".//tei:text//tei:p/*", ns):
+                # print("text: ", parag.text, "tail: ", parag.tail)
+                parag_text = parag.tail
+                # print(type(parag_text))
+                '''for t in parag_text:
+                  print(parag.find("[.='" + t + "']", ns))'''
+                # print(parag_text)
+                if parag_text is not None:
+                    for i in range(len(loc_list_deduplicated)):
+                        # On vérifie que le nom de lieu est dans le texte et on l'encode avec <name>
+                        if loc_list_deduplicated[i] in parag_text:
+                            new_line = parag_text.replace(loc_list_deduplicated[i], '<name>' + loc_list_deduplicated[i] + '</name>')
+                            parag.tail = new_line
+                # print(eT.dump(parag))
+
+            '''for l in root.findall(".//tei:l", ns):
                 if l.text is not None:
                     # print(id_doc, l.text, '->', type(l))
                     for i in range(len(loc_list_deduplicated)):
                         # On vérifie que le nom de lieu est dans le texte et on l'encode avec <name>
                         if loc_list_deduplicated[i] in l.text and l.text is not None:
                             new_line = l.text.replace(loc_list_deduplicated[i], '<name>' + loc_list_deduplicated[i] + '</name>')
-                            l.text = new_line
+                            l.text = new_line'''
+
+            '''# We add information about the edition
+            fileDesc = root.find(".//tei:fileDesc", ns)
+            editionStmt = eT.Element('editionStmt')
+            fileDesc.insert(1, editionStmt)
+
+            edition = eT.SubElement(editionStmt, "edition")
+            edition.set("n", "2.0")
+            title = eT.SubElement(edition, "title")
+            title.text = "Segunda versión de la edición, enriquecida con topónimos"
+            date = eT.SubElement(edition, "date")
+            date.text = "2024"
+
+            respStmt1 = eT.SubElement(editionStmt, "respStmt")
+            name1 = eT.SubElement(respStmt1, "name")
+            name1.text = "Elina Leblanc, Zoé Noël y Pauline Jacsont"
+            resp1 = eT.SubElement(respStmt1, "resp")
+            resp1.text = "Creación del modelo de reconocimiento automático de topónimos y codificación TEI"
+
+            respStmt2 = eT.SubElement(editionStmt, "respStmt")
+            name2 = eT.SubElement(respStmt2, "name")
+            name2.text = "Belinda Palacios, Lorysmar Franco y Constance Carta"
+            resp2 = eT.SubElement(respStmt2, "resp")
+            resp2.text = "Corrección de los resultados"
 
             # We create a list of place in the <teiHeader>
             sourceDesc = root.find('.//tei:sourceDesc', ns)
@@ -127,24 +169,25 @@ for file in os.listdir(xml_folder):
 
                     location = eT.SubElement(placeElement, "location")  # We add a <location> element
                     geo = eT.SubElement(location, "geo")  # We add a <geo> element
-                    geo.text = place[1].replace(",", " ")  # We add the geographical coordinates
+                    geo.text = place[1].replace(",", " ")  # We add the geographical coordinates'''
 
         # Print the XML tree in the console
-        # eT.dump(listPlace)
+        eT.indent(tree, space="  ", level=0)
+        eT.dump(root)
         # print('\n')
 
         # We modify the TEI files
-        tree.write(xml_path, encoding="UTF-8", xml_declaration=True)
-        print(file + ": DONE.")
+        # tree.write("../Encodage/TEI_tests/tei_ner/test.xml", encoding="UTF-8", xml_declaration=True)
+        # print(file + ": DONE.")
 
 # Creation of a new CSV file with the TEI information
 # List with the name of the columns
-new_csv_header = ['index', 'id_doc', 'original_name', 'id_wkd', 'type_place', 'coord', 'normalized_name',
-                  'longitude', 'latitude', 'shortTitle', 'pubPlace', 'printer', "date", "type_text", 'genre', 'url']
+# new_csv_header = ['index', 'id_doc', 'original_name', 'id_wkd', 'type_place', 'coord', 'normalized_name',
+                  # 'longitude', 'latitude', 'shortTitle', 'pubPlace', 'printer', "date", "type_text", 'genre', 'url']
 # print(new_csvLine)
 
-'''with open('../Encodage/nerList_v3.csv', 'w', encoding='utf-8', newline='') as newCsv:
-    writer = csv.writer(newCsv)
-    writer.writerow(new_csv_header)  # 1st line with the name of columns
-    writer.writerows(new_csvLine)  # We add the new lines
-    newCsv.close()'''
+#with open('../Encodage/nerList_v3.csv', 'w', encoding='utf-8', newline='') as newCsv:
+    # writer = csv.writer(newCsv)
+    # writer.writerow(new_csv_header)  # 1st line with the name of columns
+    # writer.writerows(new_csvLine)  # We add the new lines
+    # newCsv.close()
