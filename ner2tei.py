@@ -99,12 +99,9 @@ for file in os.listdir(xml_folder):
             # print(loc_list_wkd_deduplicated)
 
             # We add a <name> element inside the body of the TEI file
-            for parag in root.findall(".//tei:text//tei:p/*", ns):
-                # print("text: ", parag.text, "tail: ", parag.tail)
+            # Code for prose documents - Uncomment to use it
+            '''for parag in root.findall(".//tei:text//tei:p/*", ns):
                 parag_text = parag.tail
-                # print(type(parag_text))
-                '''for t in parag_text:
-                  print(parag.find("[.='" + t + "']", ns))'''
                 # print(parag_text)
                 if parag_text is not None:
                     for i in range(len(loc_list_deduplicated)):
@@ -112,18 +109,19 @@ for file in os.listdir(xml_folder):
                         if loc_list_deduplicated[i] in parag_text:
                             new_line = parag_text.replace(loc_list_deduplicated[i], '<name>' + loc_list_deduplicated[i] + '</name>')
                             parag.tail = new_line
-                # print(eT.dump(parag))
+                # print(eT.dump(parag))'''
 
-            '''for l in root.findall(".//tei:l", ns):
+            # Code for verse documents
+            for l in root.findall(".//tei:l", ns):
                 if l.text is not None:
                     # print(id_doc, l.text, '->', type(l))
                     for i in range(len(loc_list_deduplicated)):
                         # On vérifie que le nom de lieu est dans le texte et on l'encode avec <name>
                         if loc_list_deduplicated[i] in l.text and l.text is not None:
                             new_line = l.text.replace(loc_list_deduplicated[i], '<name>' + loc_list_deduplicated[i] + '</name>')
-                            l.text = new_line'''
+                            l.text = new_line
 
-            '''# We add information about the edition
+            # We add information about the edition
             fileDesc = root.find(".//tei:fileDesc", ns)
             editionStmt = eT.Element('editionStmt')
             fileDesc.insert(1, editionStmt)
@@ -169,25 +167,25 @@ for file in os.listdir(xml_folder):
 
                     location = eT.SubElement(placeElement, "location")  # We add a <location> element
                     geo = eT.SubElement(location, "geo")  # We add a <geo> element
-                    geo.text = place[1].replace(",", " ")  # We add the geographical coordinates'''
+                    geo.text = place[1].replace(",", " ")  # We add the geographical coordinates
 
         # Print the XML tree in the console
         eT.indent(tree, space="  ", level=0)
-        eT.dump(root)
+        # eT.dump(root)
         # print('\n')
 
         # We modify the TEI files
-        # tree.write("../Encodage/TEI_tests/tei_ner/test.xml", encoding="UTF-8", xml_declaration=True)
-        # print(file + ": DONE.")
+        tree.write(xml_path, encoding="UTF-8", xml_declaration=True)
+        print(file + ": DONE.")
 
 # Creation of a new CSV file with the TEI information
 # List with the name of the columns
-# new_csv_header = ['index', 'id_doc', 'original_name', 'id_wkd', 'type_place', 'coord', 'normalized_name',
-                  # 'longitude', 'latitude', 'shortTitle', 'pubPlace', 'printer', "date", "type_text", 'genre', 'url']
+new_csv_header = ['index', 'id_doc', 'original_name', 'id_wkd', 'type_place', 'coord', 'normalized_name',
+                  'longitude', 'latitude', 'shortTitle', 'pubPlace', 'printer', "date", "type_text", 'genre', 'url']
 # print(new_csvLine)
 
-#with open('../Encodage/nerList_v3.csv', 'w', encoding='utf-8', newline='') as newCsv:
-    # writer = csv.writer(newCsv)
-    # writer.writerow(new_csv_header)  # 1st line with the name of columns
-    # writer.writerows(new_csvLine)  # We add the new lines
-    # newCsv.close()
+with open('../Encodage/nerList_v3.csv', 'w', encoding='utf-8', newline='') as newCsv:
+    writer = csv.writer(newCsv)
+    writer.writerow(new_csv_header)  # 1st line with the name of columns
+    writer.writerows(new_csvLine)  # We add the new lines
+    newCsv.close()
