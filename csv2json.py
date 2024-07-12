@@ -14,19 +14,18 @@ list_places_deduplicated = []
 list_pliegos = []  # List of each place with a sublist with information about the document where it appears
 list_pliegos_deduplicated = []
 
-with open('../pliegos-ner/moreno-ner/nerList_Moreno_enriched.csv', encoding='utf-8') as f:
+with open('../NER_List_All.csv', encoding='utf-8') as f:
     csv_file = csv.reader(f)  # We parse the CSV file
     next(csv_file)  # We skip the first line
-
     for line in csv_file:
-        if line[6] != '':
+        if line[4] != 'Inclasificables':
             # List with only the normalized names
             places_all.append(line[6])
             if line[6] not in places_single:
                 places_single.append(line[6])
 
-            # List with information about the place
-            # Reproduce the structure of the format JSON Linked Place needed by the application Peripleo
+            # List with information about places
+            # Reproduce the structure of JSON Linked Place, needed by the application Peripleo
             list_places.append({'@id': line[3], 'uuid': 'https://www.wikidata.org/wiki/' + line[3],
                                 'type': 'Feature', 'properties': {'title': line[6], 'occurrences': '',
                                                                   'type_place': line[4].strip()},
@@ -81,19 +80,21 @@ for k in range(len(list_pliegos_pairs)):
         list_places_deduplicated[k]['descriptions'] = [{'value': str(places_count[k][1]) + ' ocurrencia(s)'}]
         # We associate each occurrence to a data range
         if places_count[k][1] <= 10:
-            list_places_deduplicated[k]['properties']['occurrences'] = '<= 10'
+            list_places_deduplicated[k]['properties']['occurrences'] = '1-10 veces'
         elif places_count[k][1] <= 50:
-            list_places_deduplicated[k]['properties']['occurrences'] = '<= 50'
+            list_places_deduplicated[k]['properties']['occurrences'] = '11-50 veces'
         elif places_count[k][1] <= 100:
-            list_places_deduplicated[k]['properties']['occurrences'] = '<= 100'
+            list_places_deduplicated[k]['properties']['occurrences'] = '51-100 veces'
         else:
-            list_places_deduplicated[k]['properties']['occurrences'] = '> 100'
+            list_places_deduplicated[k]['properties']['occurrences'] = 'Más de 100 veces'
 
-# We convert the result in JSON and print them in the console
+# We convert the results in JSON and print them in the console
 # print(list_places_deduplicated)
 jsonStr = json.dumps(list_places_deduplicated, ensure_ascii=False)
 print(jsonStr)
 
+# print(places_single)
+
 # We save the results in a JSON file
-# with open('data.json', 'w', encoding='utf-8') as f:
-    # json.dump(list_places_deduplicated, f, ensure_ascii=False, indent=4)
+with open('../data.json', 'w', encoding='utf-8') as f:
+    json.dump(list_places_deduplicated, f, ensure_ascii=False, indent=4)
